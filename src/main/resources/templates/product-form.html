@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品追加</title>
+</head>
+<body>
+<h1>商品追加</h1>
+<form th:action="@{/products}" th:object="${product}" method="post">
+    <label>商品名</label>
+    <input type="text" th:field="*{name}"><br>
+
+    <label>在庫</label>
+    <input type="number" th:field="*{stock}"><br>
+    
+    <label>原価</label>
+    <input type="number" th:field="*{costPrice}"><br>
+
+    <label>売価</label>
+    <input type="number" th:field="*{salePrice}"><br>
+
+    <button type="submit">登録</button>
+</form>
+</body>
+
+</html>
