@@ -1,6 +1,7 @@
 package com.example1.demo3.controller;
 
 import com.example1.demo3.entity.Product;
+import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.service.ProductService;
 
 import java.time.LocalDateTime;
@@ -11,16 +12,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
 public class ProductController {
+
+    private final ProductRepository productRepository;
     
     private final ProductService productService;
     
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductRepository productRepository) {
         this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping("/products")
@@ -65,4 +69,19 @@ public class ProductController {
         productService.deleteById(id);
         return "redirect:/products";
     }
+
+    @GetMapping("/products/out/{id}")
+    public String showOutForm(@PathVariable Integer id, Model model) {
+        Product product = productService.findById(id);
+        model.addAttribute("product", product);
+        return "product-out";
+    }
+
+    @PostMapping("/products/out")
+    public String outProduct(@RequestParam Integer id, @RequestParam Integer quantity) {
+        productService.outStock(id, quantity);
+        return "redirect:/products";
+    }
+    
+    
 }

@@ -44,4 +44,21 @@ public class ProductService {
     public void deleteById(Integer id) {
         productRepository.deleteById(id);
     }
+
+    public void outStock(Integer id, Integer quantity) {
+        Product product = productRepository.findById(id).orElseThrow();
+
+        if (product.getStock() < quantity) {
+            throw new IllegalArgumentException("在庫が足りません");
+        }
+
+        product.setStock(product.getStock() - quantity);
+        productRepository.save(product);
+    }
+
+    public Product findById(Integer id) {
+        return productRepository.findById(id).orElseThrow();
+    }
+
+    
 }

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>出庫</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #005ea2;
+        }
+
+        .info {
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #eef5ff;
+            border-left: 4px colid #0078d4;
+            border-radius: 6px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>出庫</h1>
+    <div class="info">
+        <div>商品名:<span th:text="${product.name}"></span></div>
+        <div>現在の在庫:<span th:text="${product.stock}"></span></div>
+    </div>
+    
+    <form th:action="@{/products/out}" method="post">
+        <input type="hidden" name="id" th:value="${product.id}">
+
+        <label>出庫数</label>
+        <input type="number" name="quantity" min="1" required>
+
+        <button type="submit">出庫する</button>
+    </form>
+
+</div>    
+</body> 
+</html>
