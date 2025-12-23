@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns;th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>商品一覧</title>
@@ -22,7 +22,12 @@
             <td th:text="${p.stock}"></td>
             <td th:text="${p.costPrice}"></td>
             <td th:text="${p.salePrice}"></td>
+
+            <td>
+                <a th:href="@{/products/delete/{id}(id=${p.id})}">削除</a>
+            </td>
         </tr>
+
     </table>
 
 </body>
