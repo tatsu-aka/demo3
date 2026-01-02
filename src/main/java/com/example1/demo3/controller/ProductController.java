@@ -2,6 +2,7 @@ package com.example1.demo3.controller;
 
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.service.ProductService;
 
 import java.time.LocalDateTime;
@@ -18,13 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ProductController {
 
+    private final StockHistoryRepository stockHistoryRepository;
+
     private final ProductRepository productRepository;
     
     private final ProductService productService;
     
-    public ProductController(ProductService productService, ProductRepository productRepository) {
+    public ProductController(ProductService productService, ProductRepository productRepository, StockHistoryRepository stockHistoryRepository) {
         this.productService = productService;
         this.productRepository = productRepository;
+        this.stockHistoryRepository = stockHistoryRepository;
     }
 
     @GetMapping("/products")
@@ -81,6 +85,12 @@ public class ProductController {
     public String outProduct(@RequestParam Integer id, @RequestParam Integer quantity) {
         productService.outStock(id, quantity);
         return "redirect:/products";
+    }
+
+    @GetMapping("/history")
+    public String showHistory(Model model) {
+        model.addAttribute("histories", stockHistoryRepository.findAll());
+        return "history-list";
     }
     
     

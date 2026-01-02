@@ -5,15 +5,19 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import com.example1.demo3.entity.Product;
+import com.example1.demo3.entity.StockHistory;
 import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.repository.StockHistoryRepository;
 
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final StockHistoryRepository stockHistoryRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, StockHistoryRepository stockHistoryRepository) {
         this.productRepository = productRepository;
+        this.stockHistoryRepository = stockHistoryRepository;
 
     }
 
@@ -54,6 +58,12 @@ public class ProductService {
 
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
+
+        StockHistory history = new StockHistory();
+        history.setProductId(id);
+        history.setQuantity(quantity);
+        history.setDateTime(LocalDateTime.now());
+        stockHistoryRepository.save(history);
     }
 
     public Product findById(Integer id) {
