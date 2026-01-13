@@ -19,9 +19,9 @@
 
     <tr th:each="h : ${histories}">
         <td th:text="${h.id}"></td>
-        <td th:text="${h.productId}"></td>
+        <td th:text="${h.product.name}"></td>
         <td th:text="${h.quantity}"></td>
-        <td th:text="${h.dateTime}"></td>
+        <td th:text="${#temporals.format(h.dateTime, 'yyyy-MM-dd HH:mm')}"></td>
     </tr>
 </table>
 

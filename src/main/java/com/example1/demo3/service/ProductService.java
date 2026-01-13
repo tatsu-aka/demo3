@@ -60,7 +60,7 @@ public class ProductService {
         productRepository.save(product);
 
         StockHistory history = new StockHistory();
-        history.setProductId(id);
+        history.setProduct(product);
         history.setQuantity(quantity);
         history.setDateTime(LocalDateTime.now());
         stockHistoryRepository.save(history);
@@ -70,5 +70,16 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow();
     }
 
-    
+    public void inStock(Integer id, Integer quantity) {
+        Product product = productRepository.findById(id).orElseThrow();
+        product.setStock(product.getStock() + quantity);
+        productRepository.save(product);
+
+        StockHistory history = new StockHistory();
+        history.setProduct(product);
+        history.setQuantity(quantity);
+        history.setType("IN");
+        history.setDateTime(LocalDateTime.now());
+        stockHistoryRepository.save(history);
+    }
 }

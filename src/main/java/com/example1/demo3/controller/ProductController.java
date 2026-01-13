@@ -7,6 +7,8 @@ import com.example1.demo3.service.ProductService;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,11 +89,16 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    @GetMapping("/history")
-    public String showHistory(Model model) {
-        model.addAttribute("histories", stockHistoryRepository.findAll());
-        return "history-list";
+    @GetMapping("/products/in")
+    public String showInForm(@RequestParam Integer id, Model model) {
+        Product product = productService.findById(id);
+        model.addAttribute("product", product);
+        return "product-in";
     }
-    
-    
+
+    @PostMapping("/products/in")
+    public String inProduct(@RequestParam Integer id, @RequestParam Integer quantity) {
+        productService.inStock(id, quantity);
+        return "redirect:/products";
+    }
 }

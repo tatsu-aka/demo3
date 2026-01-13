@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>入庫履歴</title>
+</head>
+<body>
+
+<h1>入庫履歴</h1>
+
+<a href="/history">入庫履歴を見る</a>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>商品ID</th>
+        <th>数量</th>
+        <th>日時</th>
+    </tr>
+
+    <tr th:each="h : ${histories}">
+        <td th:text="${h.id}"></td>
+        <td th:text="${h.product.name}"></td>
+        <td th:text="${h.quantity}"></td>
+        <td th:text="${#temporals.format(h.dateTime, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+</table>
+
+<a href="/products">商品一覧へ戻る</a>
+</body>
+</html>
