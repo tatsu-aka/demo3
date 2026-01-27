@@ -70,9 +70,10 @@
 </head> 
 <body>
 
-<h2>入庫</h2>
+<div class="container">
+    <h2>入庫</h2>
 
-<form th:action="@{/products/in}" method="post">
+<form th:action="@{/products/in/{id}(id=${product.id})}" method="post">
     <input type="hidden" name="id" th:value="${product.id}">
 
     <p>
@@ -96,5 +97,6 @@
 <p>
     <a th:href="@{/products}">商品一覧へ戻る</a>
 </p>
+</div>
 </body> 
 </html>

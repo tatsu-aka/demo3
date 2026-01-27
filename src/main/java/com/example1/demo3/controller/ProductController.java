@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 
 
 @Controller
@@ -59,8 +62,25 @@ public class ProductController {
     @GetMapping("/products/new")
     public String showCreateForm(Model model) {
         model.addAttribute("product", new Product());
-        return "product-form";
+        return "product-new";
     }
+
+    @PostMapping("/products/new")
+    public String createProduct(@RequestParam String name, @RequestParam Integer stock,
+        @RequestParam Integer costPrice, @RequestParam Integer salePrice) {
+        Product product = new Product();
+        product.setName(name);
+        product.setStock(stock);
+        product.setCostPrice(costPrice);
+        product.setSalePrice(salePrice);
+        product.setCreatedAt(LocalDateTime.now());
+        product.setUpdatedAt(LocalDateTime.now());
+
+        productService.save(product);
+        return "redirect:/products";
+    }
+    
+    
     
     @PostMapping("/products")
     public String createProduct(@ModelAttribute Product product) {
@@ -83,21 +103,21 @@ public class ProductController {
         return "product-out";
     }
 
-    @PostMapping("/products/out")
-    public String outProduct(@RequestParam Integer id, @RequestParam Integer quantity) {
+    @PostMapping("/products/out/{id}")
+    public String outProduct(@PathVariable Integer id, @RequestParam Integer quantity) {
         productService.outStock(id, quantity);
         return "redirect:/products";
     }
 
-    @GetMapping("/products/in")
-    public String showInForm(@RequestParam Integer id, Model model) {
+    @GetMapping("/products/in/{id}")
+    public String showInForm(@PathVariable Integer id, Model model) {
         Product product = productService.findById(id);
         model.addAttribute("product", product);
         return "product-in";
     }
 
-    @PostMapping("/products/in")
-    public String inProduct(@RequestParam Integer id, @RequestParam Integer quantity) {
+    @PostMapping("/products/in/{id}")
+    public String inProduct(@PathVariable Integer id, @RequestParam Integer quantity) {
         productService.inStock(id, quantity);
         return "redirect:/products";
     }

@@ -7,6 +7,10 @@
 <body>
     <h1>商品一覧</h1>
 
+    <p>
+        <a th:href="@{/products/new}">新規商品登録</a>
+    </p>
+
     <table border="1">
         <tr>
             <th>ID</th>
@@ -32,11 +36,16 @@
             </td>
 
             <td>
-                <a th:href="@{/products/in(id=${p.id})}">入庫</a>
+                <a th:href="@{/products/in/{id}(id=${p.id})}">入庫</a>
             </td>
         </tr>
 
     </table>
+
+    <p>
+        <a th:href="@{/history/in}">入庫履歴</a>
+        <a th:href="@{/history/out}">出庫履歴</a>
+    </p>
 
 </body>
 </html>

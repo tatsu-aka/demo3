@@ -62,6 +62,7 @@ public class ProductService {
         StockHistory history = new StockHistory();
         history.setProduct(product);
         history.setQuantity(quantity);
+        history.setType("OUT");
         history.setDateTime(LocalDateTime.now());
         stockHistoryRepository.save(history);
     }

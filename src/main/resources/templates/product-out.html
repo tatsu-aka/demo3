@@ -77,7 +77,7 @@
         <div>現在の在庫:<span th:text="${product.stock}"></span></div>
     </div>
     
-    <form th:action="@{/products/out}" method="post">
+    <form th:action="@{/products/out/{id}(id=${product.id})}" method="post">
         <input type="hidden" name="id" th:value="${product.id}">
 
         <label>出庫数</label>
@@ -85,6 +85,10 @@
 
         <button type="submit">出庫する</button>
     </form>
+
+    <p>
+        <a th:href="@{/products}">商品一覧へ戻る</a>
+    </p>
 
 </div>    
 </body> 

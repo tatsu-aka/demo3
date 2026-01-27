@@ -22,7 +22,6 @@ public class StockHistory {
     private Product product;
     private Integer quantity;
     private LocalDateTime dateTime;
-
     private String type;
 
     //Getter Setter
