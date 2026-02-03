@@ -7,7 +7,17 @@
 <body>
 
 <h1>入庫履歴</h1>
+<form th:action="@{/history/in}" method="get">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="商品名で検索">
+    <button type="submit">検索</button>
+</form>
 
+<div>
+    <a th:href="@{/history/in(sort='dateDesc', keyword=${keyword})}">日付が新しい順</a>
+    <a th:href="@{/history/in(sort='dateAsc', keyword=${keyword})}">日付が古い順</a>
+    <a th:href="@{/history/in(sort='qtyDesc', keyword=${keyword})}">数量が多い順</a>
+    <a th:href="@{/history/in(sort='qtyAsc', keyword=${keyword})}">数量が少ない順</a>
+</div>
 <table border="1">
     <tr>
         <th>ID</th>
@@ -16,7 +26,7 @@
         <th>日時</th>
     </tr>
 
-    <tr th:each="h : ${histories}">
+    <tr th:each="h : ${history}">
         <td th:text="${h.id}"></td>
         <td th:text="${h.product.name}"></td>
         <td th:text="${h.quantity}"></td>

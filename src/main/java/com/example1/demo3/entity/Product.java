@@ -16,6 +16,15 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
+    @Column(nullable = false)
+    private String unit;
+
+    @Column(nullable = false)
+    private String category;
+
+    @Column(nullable = false)
+    private String maker;
+
     @Column(name = "cost_price", nullable = false)
     private Integer costPrice;
 
@@ -28,6 +37,17 @@ public class Product {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     // ---getter / setter ---
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -37,6 +57,15 @@ public class Product {
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public String getMaker() { return maker; }
+    public void setMaker(String maker) { this.maker = maker; }
 
     public Integer getCostPrice() { return costPrice; }
     public void setCostPrice(Integer costPrice) { this.costPrice = costPrice; }

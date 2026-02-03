@@ -8,5 +8,5 @@ import com.example1.demo3.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> findByNameContaining(String keyword);
-    
+    List<Product> findByCategory(String category);
 }

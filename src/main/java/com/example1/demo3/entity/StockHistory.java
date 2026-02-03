@@ -8,8 +8,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "stock_history")
 public class StockHistory {
     
     @Id
@@ -54,7 +56,7 @@ public class StockHistory {
         this.dateTime = dateTime;
     }
 
-    public String getTpye() {
+    public String getType() {
         return type;
     }
     public void setType(String type) {
