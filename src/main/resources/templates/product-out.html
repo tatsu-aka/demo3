@@ -72,19 +72,26 @@
 
 <div class="container">
     <h1>出庫</h1>
-    <div class="info">
-        <div>商品名:<span th:text="${product.name}"></span></div>
-        <div>現在の在庫:<span th:text="${product.stock}"></span></div>
+
+<form th:action="@{/products/out}" method="post">
+
+    <div class="mb-3">
+        <label class="form-label">商品</label>
+        <select name="productId" class="form-select">
+            <option th:each="p : ${products}"
+                    th:value="${p.id}"
+                    th:text="${p.name}">
+            </option>
+        </select>
     </div>
-    
-    <form th:action="@{/products/out/{id}(id=${product.id})}" method="post">
-        <input type="hidden" name="id" th:value="${product.id}">
 
-        <label>出庫数</label>
-        <input type="number" name="quantity" min="1" required>
+    <div class="mb-3">
+        <label class="form-label">出庫数</label>
+        <input type="number" name="quantity" min="1" required class="form-control">
+    </div>
 
-        <button type="submit">出庫する</button>
-    </form>
+    <button type="submit" class="btn btn-danger">出庫する</button>
+</form>
 
     <p>
         <a th:href="@{/products}">商品一覧へ戻る</a>

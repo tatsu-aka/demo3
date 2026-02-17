@@ -16,6 +16,34 @@
             <input type="number" name="stock" min="0" required>
     </p>
     <p>
+        単位：
+            <select id="unitSelect" onchange="toggleUnitInput()" class="form-select">
+                <option value="">選択してください</option>
+                <option value="個">個</option>
+                <option value="P">P</option>
+                <option value="ケース">ケース</option>
+                <option value="その他">その他（自由入力）</option>
+            </select>
+            <input type="text" id="unitInput" name="unit" style="display: none;" placeholder="単位を入力">
+    </p>
+    <p>
+        カテゴリ：
+            <select name="category" required>
+                <option value="">選択してください</option>
+                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+            </select>
+    </p>
+    <p>
+        取引先：
+            <select id="makerSelect" onchange="toggleMakerInput()" class="form-select">
+                <option value="">選択してください</option>
+                <option value="A株式会社">A株式会社</option>
+                <option value="B株式会社">B株式会社</option>
+                <option value="その他">その他（自由入力）</option>
+            </select>
+            <input type="text" id="makerInput" name="maker" style="display: none;" placeholder="取引先を入力">
+    </p>
+    <p>
         原価：
             <input type="number" name="costPrice" required>
     </p>
@@ -26,6 +54,36 @@
 
     <button type="submit">登録</button>
 </form>
+<script>
+    function toggleUnitInput() {
+        const sel = document.getElementById("unitSelect");
+        const input = document.getElementById("unitInput");
+
+        if (sel.value === "その他") {
+            input.style.display = "block";
+            input.required = true;
+            input.value = "";
+        } else {
+            input.style.display = "none";
+            input.required = false;
+            input.value = sel.value;
+        }
+    }
+    function toggleMakerInput() {
+        const sel = document.getElementById("makerSelect");
+        const input = document.getElementById("makerInput");
+
+        if (sel.value === "その他") {
+            input.style.display = "block";
+            input.required = true;
+            input.value = "";
+        } else {
+            input.style.display = "none";
+            input.required = false;
+            input.value = sel.value;
+        }
+    }
+</script>
 </body>
 
 </html>

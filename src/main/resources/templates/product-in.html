@@ -69,34 +69,58 @@
     </style>
 </head> 
 <body>
-
 <div class="container">
     <h2>入庫</h2>
+    
+    <form th:action="@{/products/in}" method="post">
+        <!-- 商品 -->
+        <div class="mb-3">
+            <label class="form-label">商品</label>
+            <!--既存商品選択-->
+            <select name="productId" class="form-select mb-2" onchange="updateInfo(this)">
+                <option value="">選択してください</option>
+                <option th:each="p : ${products}"
+                        th:value="${p.id}"
+                        th:data-maker="${p.maker}"
+                        th:data-unit="${p.unit}"
+                        th:data-category="${p.category}"
+                        th:text="${p.name}">
+                </option>
+            </select>
+              新規商品入力
+            <input type="text" name="newProductName" class="form-control mt-2" placeholder="新しい商品名を入力">
+        </div>
 
-<form th:action="@{/products/in/{id}(id=${product.id})}" method="post">
-    <input type="hidden" name="id" th:value="${product.id}">
+        <!--取引先-->
+        <div class="mb-3">
+            <label class="form-label">取引先</label>
 
-    <p>
-    商品名：
-        <span th:text="${product.name}"></span>    
-    </p>
+            <!--既存取引先-->
+            <select id="makerSelect" class="form-select mb-2" onchange="toggleMakerInput()">
+                <option value="">選択してください</option>
+                <option th:each="m : ${makers}" th:value="${m}" th:text="${m}"></option>
+                <option value="その他">その他（自由入力）</option>
+            </select>
+            <!--新規取引先-->
+            <input type="text" id="makerInput" name="maker" class="form-control" placeholder="新しい取引先を入力" style="display: none;">
+        </div>
 
-    <p>
-    現在の在庫：
-        <span th:text="${product.stock}"></span>
-    </p>
+        <button type="submit" class="btn btn-primary">入庫する</button>
+    </form>
+</div>
 
-    <p>
-    入庫数量
-        <input type="number" name="quantity" min="1" required>    
-    </p>
-
-    <button type="submit">入庫する</button>
-</form>
 
 <p>
     <a th:href="@{/products}">商品一覧へ戻る</a>
 </p>
 </div>
+<script>
+    function updateInfo(sel) {
+        const opt = sel.options[sel.selectedIndex];
+        document.getElementById("category").textContent = opt.dataset.category || "";
+        document.getElementById("makerInput").textContent = opt.dataset.maker || "";
+        document.getElementById("unitInput").textContent = opt.dataset.unit || "";
+    }
+</script>
 </body> 
 </html>

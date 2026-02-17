@@ -32,6 +32,8 @@ public class ProductController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("product", new Product());
+        //カテゴリ
+        model.addAttribute("categories", List.of("野菜", "果物"));
         return "product-new";
     }
 
@@ -65,30 +67,32 @@ public class ProductController {
     }
 
     // 出庫フォーム
-    @GetMapping("/out/{id}")
-    public String showOutForm(@PathVariable Integer id, Model model) {
-        model.addAttribute("product", productService.findById(id));
+    @GetMapping("/out")
+    public String showOutForm(Model model) {
+        model.addAttribute("products", productService.findAll());
         return "product-out";
     }
 
     // 出庫処理
-    @PostMapping("/out/{id}")
-    public String outProduct(@PathVariable Integer id, @RequestParam Integer quantity) {
-        productService.outStock(id, quantity);
+    @PostMapping("/out")
+    public String outProduct(@RequestParam Integer productId, @RequestParam Integer quantity) {
+        productService.outStock(productId, quantity);
         return "redirect:/products";
     }
 
     // 入庫フォーム
-    @GetMapping("/in/{id}")
-    public String showInForm(@PathVariable Integer id, Model model) {
-        model.addAttribute("product", productService.findById(id));
+    @GetMapping("/in")
+    public String showInForm(Model model) {
+        model.addAttribute("products", productService.findAll());
         return "product-in";
     }
 
     // 入庫処理
-    @PostMapping("/in/{id}")
-    public String inProduct(@PathVariable Integer id, @RequestParam Integer quantity) {
-        productService.inStock(id, quantity);
+    @PostMapping("/in")
+    public String inProduct(@RequestParam Integer productId, @RequestParam Integer quantity,
+        @RequestParam String maker, @RequestParam String unit
+    ) {
+        productService.inStock(productId, quantity, maker, unit);
         return "redirect:/products";
     }
 }

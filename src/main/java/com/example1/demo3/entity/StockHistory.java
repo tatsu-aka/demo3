@@ -3,6 +3,7 @@ package com.example1.demo3.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,11 +19,13 @@ public class StockHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
 
     private Product product;
     private Integer quantity;
+    private String maker;
+    private String unit;
     private LocalDateTime dateTime;
     private String type;
 
@@ -47,6 +50,20 @@ public class StockHistory {
     }
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getMaker() {
+        return maker;
+    }
+    public void setMaker(String maker) {
+        this.maker = maker;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
     
     public LocalDateTime getDateTime() {

@@ -3,6 +3,8 @@ package com.example1.demo3.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import org.apache.logging.log4j.Marker;
+
 @Entity
 @Table(name = "products")
 public class Product {
@@ -22,8 +24,9 @@ public class Product {
     @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false)
-    private String maker;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "maker_id")
+    private Maker maker;
 
     @Column(name = "cost_price", nullable = false)
     private Integer costPrice;
@@ -64,8 +67,8 @@ public class Product {
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    public String getMaker() { return maker; }
-    public void setMaker(String maker) { this.maker = maker; }
+    public Maker getMaker() { return maker; }
+    public void setMaker(Maker maker) { this.maker = maker; }
 
     public Integer getCostPrice() { return costPrice; }
     public void setCostPrice(Integer costPrice) { this.costPrice = costPrice; }

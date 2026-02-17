@@ -24,7 +24,7 @@ public class ProductService {
     }
 
     // 商品一覧
-    public List<Product> findAllProducts() {
+    public List<Product> findAll() {
         return productRepository.findAll();
     }
 
@@ -45,12 +45,19 @@ public class ProductService {
 
     // 入庫処理
     @Transactional
-    public void inStock(Integer id, Integer quantity) {
+    public void inStock(Integer id, Integer quantity, String maker, String unit) {
         Product product = findById(id);
         product.setStock(product.getStock() + quantity);
         productRepository.save(product);
 
-        saveHistory(product, quantity, "IN");
+        //入庫履歴に保存
+        StockHistory history = new StockHistory();
+        history.setProduct(product);
+        history.setQuantity(quantity);
+        history.setMaker(maker);
+        history.setUnit(unit);
+
+        stockHistoryRepository.save(history);
     }
 
     // 出庫処理
