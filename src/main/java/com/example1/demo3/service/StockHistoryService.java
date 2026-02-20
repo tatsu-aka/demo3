@@ -11,38 +11,55 @@ import com.example1.demo3.service.StockHistoryService;
 
 @Service
 public class StockHistoryService {
-    
+
     private final StockHistoryRepository stockHistoryRepository;
 
     public StockHistoryService(StockHistoryRepository stockHistoryRepository) {
         this.stockHistoryRepository = stockHistoryRepository;
     }
 
-    //出庫履歴検索・ソート
+    // 出庫履歴検索・ソート
     public List<StockHistory> searchAndSortOut(String keyword, String sort) {
         List<StockHistory> list = stockHistoryRepository.searchOut(keyword);
         return sortList(list, sort);
-    }        
-    //入庫履歴検索・ソート
+    }
+
+    // 入庫履歴検索・ソート
     public List<StockHistory> searchAndSortIn(String keyword, String sort) {
         List<StockHistory> list = stockHistoryRepository.searchIn(keyword);
         return sortList(list, sort);
     }
-    //共通ソート
+
+    // 共通ソート処理
     private List<StockHistory> sortList(List<StockHistory> list, String sort) {
+
+        if (sort == null || sort.isEmpty()) {
+            sort = "dateDesc"; // デフォルト
+        }
+
         switch (sort) {
             case "dateAsc":
                 list.sort(Comparator.comparing(StockHistory::getDateTime));
                 break;
-            case "qtyDesc":
-                list.sort(Comparator.comparing(StockHistory::getQuantity).reversed());
+
+            case "dateDesc":
+                list.sort(Comparator.comparing(StockHistory::getDateTime).reversed());
                 break;
+
             case "qtyAsc":
                 list.sort(Comparator.comparing(StockHistory::getQuantity));
                 break;
+
+            case "qtyDesc":
+                list.sort(Comparator.comparing(StockHistory::getQuantity).reversed());
+                break;
+
             default:
+                // 想定外の値が来ても安全に動く
                 list.sort(Comparator.comparing(StockHistory::getDateTime).reversed());
-        }    
-        return list;    
+                break;
+        }
+
+        return list;
     }
-}    
+}
