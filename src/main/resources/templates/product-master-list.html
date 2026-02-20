@@ -10,7 +10,7 @@
 
 <h2 class="mb-3">商品マスタ一覧</h2>
 
-<a href="/products/masters" class="btn btn-success mb-3">＋新規商品登録</a>
+<a href="/products/master/new" class="btn btn-success mb-3">＋新規商品登録</a>
 
 <table class="table table-bordered">
     <tr>
@@ -20,7 +20,6 @@
         <th>単位</th>
         <th>カテゴリ</th>
         <th>原価</th>
-        <th>売価</th>
         <th>操作</th>
     </tr>
 
@@ -31,7 +30,7 @@
         <td th:text="${p.unit}"></td>
         <td th:text="${p.category}"></td>
         <td th:text="${p.costPrice}"></td>
-        <td th:text="${p.salePrice}"></td>
+        
 
         <td>
             <a th:href="@{'/products/master/edit/' + ${p.id}}" class="btn btn-primary btn-sm">編集</a>
@@ -40,3 +39,6 @@
         </td>
     </tr>
 </table>
+<a href="/product" class="btn btn-secondary mt-3">←商品一覧に戻る</a>
+</body>
+</html>

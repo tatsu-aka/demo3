@@ -3,13 +3,23 @@ package com.example1.demo3.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example1.demo3.entity.StockHistory;
 
+
+
+
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Integer> {
     List<StockHistory> findByTypeOrderByDateTimeDesc(String type);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM StockHistory h WHERE h.product.id = :productId")
+    void deleteByProductId(@Param("productId") Integer productId);
 
     //商品名で検索 出庫履歴
     @Query("SELECT h FROM StockHistory h " + "JOIN h.product p " + 

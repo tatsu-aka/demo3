@@ -27,7 +27,7 @@
     <h2 class="mb-3">商品一覧</h2>
 
     <!-- 検索フォーム -->
-    <form th:action="@{/products}" method="get" class="mb-3 d-flex" style="max-width: 400px;">
+    <form th:action="@{/product}" method="get" class="mb-3 d-flex" style="max-width: 400px;">
         <input type="text" name="keyword" th:value="${keyword}"
                class="form-control me-2" placeholder="商品名で検索">
         <button type="submit" class="btn btn-primary">検索</button>
@@ -35,11 +35,10 @@
 
     <!-- 新規登録ボタン -->
     <div class="mb-3">
-        <a href="/products/new" class="btn btn-success me-2">＋新規商品登録</a>
-        <a href="/products/in" class="btn btn-primary me-2">入庫</a>
-        <a href="/products/out" class="btn btn-danger me-2">出庫</a>
+        <a href="/product/in" class="btn btn-primary me-2">入庫</a>
+        <a href="/product/out" class="btn btn-danger me-2">出庫</a>
         <a href="/makers" class="btn btn-danger me-2">取引先一覧</a>
-        <a href="/master" class="btn btn-danger me-2">商品マスタ一覧</a>
+        <a href="/products/master" class="btn btn-danger me-2">商品マスタ一覧</a>
     </div>
 
     <!-- 商品一覧テーブル -->
@@ -53,7 +52,6 @@
                 <th>単位</th>
                 <th>カテゴリ</th>
                 <th>原価</th>
-                <th>売価</th>
                 <th>操作</th>
             </tr>
         </thead>
@@ -67,11 +65,11 @@
                 <td th:text="${p.unit}"></td>
                 <td th:text="${p.category}"></td>
                 <td th:text="${p.costPrice}"></td>
-                <td th:text="${p.salePrice}"></td>
+                
 
                 <td>
-                    <a th:href="@{'/products/edit/' + ${p.id}}" class="btn btn-sm btn-primary">編集</a>
-                    <a th:href="@{'/products/delete/' + ${p.id}}" class="btn btn-sm btn-danger"
+                    <a th:href="@{'/product/edit/' + ${p.id}}" class="btn btn-sm btn-primary">編集</a>
+                    <a th:href="@{'/product/delete/' + ${p.id}}" class="btn btn-sm btn-danger"
                        onclick="return confirm('削除してよろしいですか？');">削除</a>
                 </td>
             </tr>

@@ -16,7 +16,7 @@ public class Product {
     private String name;
 
     @Column(nullable = false)
-    private Integer stock;
+    private Integer stock = 0;
 
     @Column(nullable = false)
     private String unit;

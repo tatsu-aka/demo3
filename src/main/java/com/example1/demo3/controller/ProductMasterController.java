@@ -17,7 +17,7 @@ import com.example1.demo3.service.ProductMasterService;
 
 
 @Controller
-@RequestMapping("/master")
+@RequestMapping("/products/master")
 public class ProductMasterController {
     private final ProductMasterService productMasterService;
     private final MakerRepository makerRepository;

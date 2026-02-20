@@ -34,7 +34,9 @@ public class ProductService {
     }
 
     // 商品削除
+    @Transactional
     public void deleteById(Integer id) {
+        stockHistoryRepository.deleteByProductId(id);
         productRepository.deleteById(id);
     }
 
