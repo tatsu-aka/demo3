@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,6 +34,11 @@ public class StockHistory {
     private String category;
     private LocalDateTime dateTime;
     private String type;
+
+    @PrePersist
+    public void onCreate() {
+        this.dateTime = LocalDateTime.now();
+    }
 
     //Getter Setter
 

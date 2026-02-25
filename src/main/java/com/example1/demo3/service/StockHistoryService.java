@@ -39,7 +39,7 @@ public class StockHistoryService {
 
         switch (sort) {
             case "dateAsc":
-                list.sort(Comparator.comparing(StockHistory::getDateTime));
+                Comparator<StockHistory> dateComparator = Comparator.comparing(StockHistory::getDateTime, Comparator.nullsLast(Comparator.naturalOrder()));
                 break;
 
             case "dateDesc":
