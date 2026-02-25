@@ -1,25 +1,27 @@
 package com.example1.demo3.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Service;
 
+import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.StockHistory;
+import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockHistoryRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
-public class StockService {
+public class StockInService {
     private final ProductRepository productRepository;
     private final StockHistoryRepository stockHistoryRepository;
+    private final MakerRepository makerRepository;
 
-    public StockService(ProductRepository productRepository,
-                        StockHistoryRepository stockHistoryRepository) {
+    public StockInService(ProductRepository productRepository,
+                        StockHistoryRepository stockHistoryRepository, MakerRepository makerRepository) {
         this.productRepository = productRepository;
         this.stockHistoryRepository = stockHistoryRepository;
+        this.makerRepository = makerRepository;
     }
     // 商品取得
     private Product findProduct(Integer id) {
@@ -29,38 +31,24 @@ public class StockService {
 
     // 入庫処理
     @Transactional
-    public void inStock(Integer id, Integer quantity, String maker, String unit) {
-        Product product = findProduct(id);
+    public void inStock(Integer productId, Integer quantity, Integer makerId, String category, String unit) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        Maker maker = makerRepository.findById(makerId).orElseThrow();
 
+        //在庫更新
         product.setStock(product.getStock() + quantity);
         productRepository.save(product);
 
-        saveHistory(product, quantity, "IN", maker, unit);
-    }
-    // 出庫処理
-    @Transactional
-    public void outStock(Integer id, Integer quantity) {
-        Product product = findProduct(id);
-
-        if (product.getStock() < quantity) {
-            throw new IllegalArgumentException("在庫が足りません");
-        }
-
-        product.setStock(product.getStock() - quantity);
-        productRepository.save(product);
-
-        saveHistory(product, quantity, "OUT", product.getMaker().getName(), product.getUnit());
-    }
-    // 履歴保存（共通）
-    private void saveHistory(Product product, Integer quantity, String type, String maker, String unit) {
+        //履歴保存
         StockHistory history = new StockHistory();
         history.setProduct(product);
         history.setQuantity(quantity);
-        history.setType(type);
+        history.setType("IN");
         history.setMaker(maker);
         history.setUnit(unit);
-        history.setDateTime(LocalDateTime.now());
+        history.setCategory(category);
 
         stockHistoryRepository.save(history);
     }
+    
 }

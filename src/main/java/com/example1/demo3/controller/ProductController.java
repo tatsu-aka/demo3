@@ -1,7 +1,11 @@
 package com.example1.demo3.controller;
 
+import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.entity.Product;
+import com.example1.demo3.service.MakerService;
 import com.example1.demo3.service.ProductService;
+import com.example1.demo3.service.StockInService;
+import com.example1.demo3.service.StockOutService;
 
 import java.util.List;
 
@@ -9,14 +13,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
 @Controller
 @RequestMapping("/product")
 public class ProductController {
 
     private final ProductService productService;
+    private final MakerService makerService;
+    private final StockInService stockInService;
+    private final StockOutService stockOutService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, MakerService makerService, StockInService stockInService,
+        StockOutService stockOutService) {
         this.productService = productService;
+        this.makerService = makerService;
+        this.stockInService = stockInService;
+        this.stockOutService = stockOutService;
     }
 
     // 商品一覧 + 検索
@@ -41,7 +53,7 @@ public class ProductController {
     @PostMapping("/new")
     public String createProduct(@ModelAttribute Product product) {
         productService.save(product);
-        return "redirect:/products";
+        return "redirect:/product";
     }
 
     // 編集フォーム
@@ -56,43 +68,60 @@ public class ProductController {
     public String updateProduct(@PathVariable Integer id, @ModelAttribute Product product) {
         product.setId(id);
         productService.save(product);
-        return "redirect:/products";
+        return "redirect:/product";
     }
 
     // 削除
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Integer id) {
         productService.deleteById(id);
-        return "redirect:/products";
+        return "redirect:/product";
+    }
+
+    //商品一覧API
+    @GetMapping("/api/products")
+    @ResponseBody
+    public List<ProductDto> getProducts() {
+        return productService.findAll().stream().map(p -> new ProductDto(
+            p.getId(), p.getName(), p.getCategory(), p.getUnit(), p.getStock())).toList();
     }
 
     // 出庫フォーム
-    @GetMapping("/out")
+    @GetMapping("/out-form")
     public String showOutForm(Model model) {
         model.addAttribute("products", productService.findAll());
+
+        //カテゴリと単位のリスト
+        model.addAttribute("categories", List.of("野菜", "果物"));
+        model.addAttribute("units", List.of("個", "P", "ケース", "kg"));
         return "product-out";
     }
 
     // 出庫処理
     @PostMapping("/out")
-    public String outProduct(@RequestParam Integer productId, @RequestParam Integer quantity) {
-        productService.outStock(productId, quantity);
-        return "redirect:/products";
-    }
+    public String outProduct(@RequestParam Integer productId, @RequestParam Integer quantity,
+        @RequestParam String unit, @RequestParam String category) {
+            stockOutService.outStock(productId, quantity, unit, category);
+            return "redirect:/product";
+        }
 
     // 入庫フォーム
     @GetMapping("/in")
     public String showInForm(Model model) {
         model.addAttribute("products", productService.findAll());
+        model.addAttribute("makers", makerService.findAll());
+
+        //カテゴリと単位のリスト
+        model.addAttribute("categories", List.of("野菜", "果物"));
+        model.addAttribute("units", List.of("個", "P", "ケース", "kg"));
         return "product-in";
     }
 
     // 入庫処理
     @PostMapping("/in")
     public String inProduct(@RequestParam Integer productId, @RequestParam Integer quantity,
-        @RequestParam String maker, @RequestParam String unit
-    ) {
-        productService.inStock(productId, quantity, maker, unit);
-        return "redirect:/products";
+        @RequestParam Integer makerId, @RequestParam String unit, @RequestParam String category) {
+        stockInService.inStock(productId, quantity, makerId, unit, category);
+        return "redirect:/product";
     }
 }

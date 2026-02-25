@@ -3,7 +3,6 @@ package com.example1.demo3.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import org.apache.logging.log4j.Marker;
 
 @Entity
 @Table(name = "products")

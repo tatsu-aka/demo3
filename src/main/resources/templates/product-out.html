@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>出庫</title>
@@ -19,7 +20,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 1);
         }
-        
+
         h1 {
             text-align: center;
             margin-bottom: 25px;
@@ -62,41 +63,90 @@
             margin-bottom: 20px;
             padding: 12px;
             background: #eef5ff;
-            border-left: 4px colid #0078d4;
+            border-left: 4px solid #0078d4;
             border-radius: 6px;
             color: #333;
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>出庫</h1>
+    <div class="container">
+        <h1>出庫</h1>
 
-<form th:action="@{/product/out}" method="post">
+        <form th:action="@{/product/out}" method="post">
 
-    <div class="mb-3">
-        <label class="form-label">商品</label>
-        <select name="productId" class="form-select">
-            <option th:each="p : ${products}"
-                    th:value="${p.id}"
-                    th:text="${p.name}">
-            </option>
-        </select>
+            <div class="mb-3">
+                <label class="form-label">商品</label>
+                <select name="productId" id="productSelect" required>
+                    <option value="">選択してください</option>
+                    <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}">
+                    </option>
+                </select>
+            </div>
+
+            <div id="productInfo" style="display: none;">
+                
+            </div>
+
+            <!--出庫数量-->
+            <div class="mb-3">
+                <label class="form-label">出庫数</label>
+                <input type="number" name="quantity" min="1" required class="form-control">
+            </div>
+
+            <!--単位-->
+            <div class="mb-3">
+                <label>単位：</label>
+                <select name="unit" id="unitInput" required>
+                    <option value="">選択してください</option>
+                    <option th:each="u : ${units}" th:value="${u}" th:text="${u}"></option>
+                </select>
+            </div>
+
+            <!--カテゴリ-->
+            <div class="mb-3">
+                <label>カテゴリ：</label>
+                <select name="category" id="categoryInput" required>
+                    <option value="">選択してください</option>
+                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger">出庫する</button>
+        </form>
+
+        <p>
+            <a th:href="@{/product}">商品一覧へ戻る</a>
+        </p>
     </div>
+    <script>
+        let products = [];
 
-    <div class="mb-3">
-        <label class="form-label">出庫数</label>
-        <input type="number" name="quantity" min="1" required class="form-control">
-    </div>
+        fetch("/product/api/products")
+            .then(res => res.json())
+            .then(data => {
+                products = data;
 
-    <button type="submit" class="btn btn-danger">出庫する</button>
-</form>
+                const select = document.getElementById("productSelect");
 
-    <p>
-        <a th:href="@{/product}">商品一覧へ戻る</a>
-    </p>
+                select.addEventListener("change", function () {
+                    const id = Number(this.value);
+                    const product = products.find(p => p.id === id);
 
-</div>    
-</body> 
+                    if (product) {
+                        document.getElementById("productInfo").style.display = "block";
+                        document.getElementById("category").textContent = product.category;
+                        document.getElementById("unit").textContent = product.unit;
+                        document.getElementById("stock").textContent = product.stock;
+
+                        document.getElementById("categoryInput").value = product.category;
+                        document.getElementById("unitInput").value = product.unit;
+                    }
+                });
+            });
+    </script>
+</body>
+
 </html>

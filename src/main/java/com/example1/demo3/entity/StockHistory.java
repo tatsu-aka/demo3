@@ -21,11 +21,16 @@ public class StockHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-
     private Product product;
+
     private Integer quantity;
-    private String maker;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "maker_id", nullable = true)
+    private Maker maker;
+
     private String unit;
+    private String category;
     private LocalDateTime dateTime;
     private String type;
 
@@ -52,10 +57,10 @@ public class StockHistory {
         this.quantity = quantity;
     }
 
-    public String getMaker() {
+    public Maker getMaker() {
         return maker;
     }
-    public void setMaker(String maker) {
+    public void setMaker(Maker maker) {
         this.maker = maker;
     }
 
@@ -64,6 +69,13 @@ public class StockHistory {
     }
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+    public void setCategory(String category) {
+        this.category = category;
     }
     
     public LocalDateTime getDateTime() {
