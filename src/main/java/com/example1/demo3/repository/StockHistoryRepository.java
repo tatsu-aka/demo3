@@ -32,5 +32,8 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
             "WHERE h.type = 'IN' " + "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE CONCAT('%', :keyword, '%')) " +
             "ORDER BY h.dateTime DESC")
     List<StockHistory> searchIn(String keyword);
+
+    // グラフ用：指定商品の履歴を昇順で取得
+    List<StockHistory> findByProductIdOrderByDateTimeAsc(Integer productId);
     
 }

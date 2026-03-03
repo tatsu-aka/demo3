@@ -34,6 +34,7 @@ public class StockHistory {
     private String category;
     private LocalDateTime dateTime;
     private String type;
+    private Integer stock;
 
     @PrePersist
     public void onCreate() {
@@ -96,5 +97,12 @@ public class StockHistory {
     }
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 }

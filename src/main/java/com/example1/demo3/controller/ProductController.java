@@ -83,7 +83,7 @@ public class ProductController {
     @ResponseBody
     public List<ProductDto> getProducts() {
         return productService.findAll().stream().map(p -> new ProductDto(
-            p.getId(), p.getName(), p.getCategory(), p.getUnit(), p.getStock())).toList();
+            p.getId(), p.getName(), p.getCategory(), p.getUnit(), p.getStock(), p.getMaker() != null ? p.getMaker().getName() : null)).toList();
     }
 
     // 出庫フォーム

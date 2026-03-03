@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example1.demo3.dto.StockHistoryDto;
 import com.example1.demo3.entity.StockHistory;
 import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.service.StockHistoryService;
@@ -61,5 +62,12 @@ public class StockHistoryService {
         }
 
         return list;
+    }
+
+    //グラフ用：指定商品の履歴を昇順
+    public List<StockHistoryDto> getStockHistoryForChart(Integer productId) {
+        List<StockHistory> list = stockHistoryRepository.findByProductIdOrderByDateTimeAsc(productId);
+        return list.stream()
+        .map(h -> new StockHistoryDto(h.getDateTime(), h.getStock())).toList();
     }
 }

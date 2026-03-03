@@ -6,13 +6,15 @@ public class ProductDto {
     private String category;
     private String unit;
     private Integer stock;
+    private String makerName;
 
-    public ProductDto(Integer id, String name, String category, String unit, Integer stock) {
+    public ProductDto(Integer id, String name, String category, String unit, Integer stock, String makerName) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.unit = unit;
         this.stock = stock;
+        this.makerName = makerName;
     }
 
     public Integer getId() { return id; }
@@ -20,5 +22,6 @@ public class ProductDto {
     public String getCategory() { return category; }
     public String getUnit() { return unit; }
     public Integer getStock() { return stock; }
+    public String getMakerName() { return makerName; }
 
 }

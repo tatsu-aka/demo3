@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockHistoryRepository;
@@ -15,8 +16,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final StockHistoryRepository stockHistoryRepository;
 
-    public ProductService(ProductRepository productRepository,
-                          StockHistoryRepository stockHistoryRepository) {
+    public ProductService(ProductRepository productRepository, StockHistoryRepository stockHistoryRepository) {
         this.productRepository = productRepository;
         this.stockHistoryRepository = stockHistoryRepository;
     }
@@ -49,5 +49,10 @@ public class ProductService {
             return productRepository.findAll();
         }
         return productRepository.findByNameContaining(keyword);
+    }
+
+    public List<ProductDto> findAllDto() {
+        return productRepository.findAll().stream().map(p -> new ProductDto(p.getId(), p.getName(), p.getCategory(),
+                p.getUnit(), p.getStock(), p.getMaker() != null ? p.getMaker().getName() : null)).toList();
     }
 }
