@@ -28,7 +28,8 @@ public class StockOutService {
         }
 
         //在庫更新
-        product.setStock(product.getStock() - quantity);
+        int afterStock = product.getStock() - quantity;
+        product.setStock(afterStock);
         productRepository.save(product);
 
         //履歴保存
@@ -38,6 +39,7 @@ public class StockOutService {
         history.setType("OUT");
         history.setUnit(unit);
         history.setCategory(category);
+        history.setStock(afterStock);
 
         stockHistoryRepository.save(history);
     }

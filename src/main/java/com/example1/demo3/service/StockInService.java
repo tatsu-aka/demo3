@@ -31,12 +31,13 @@ public class StockInService {
 
     // 入庫処理
     @Transactional
-    public void inStock(Integer productId, Integer quantity, Integer makerId, String category, String unit) {
+    public void inStock(Integer productId, Integer quantity, Integer makerId, String unit, String category) {
         Product product = productRepository.findById(productId).orElseThrow();
         Maker maker = makerRepository.findById(makerId).orElseThrow();
 
         //在庫更新
-        product.setStock(product.getStock() + quantity);
+        int afterStock = product.getStock() + quantity;
+        product.setStock(afterStock);
         productRepository.save(product);
 
         //履歴保存
@@ -47,6 +48,7 @@ public class StockInService {
         history.setMaker(maker);
         history.setUnit(unit);
         history.setCategory(category);
+        history.setStock(afterStock);
 
         stockHistoryRepository.save(history);
     }
