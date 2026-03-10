@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>入庫・出庫推移グラフ</title>
+</head>
+
+<body>
+    <div id="app" style="padding: 20px;">
+
+        <!--商品選択-->
+        <div style="margin-bottom: 16px;">
+            <label>商品：</label>
+            <select v-model="productId" @change="loadInData(); loadOutData();">
+                <option disabled value="">商品を選択</option>
+                <option v-for="p in products" :value="p.id">{{ p.name }}</option>
+            </select>
+        </div>
+
+        <!--グラフを横並びに配置-->
+        <div style="display: flex; gap: 20px; margin-top: 20px;">
+
+            <!--入庫グラフ-->
+            <div style="flex: 1;">
+                <h3 style="text-align: center;">入庫推移</h3>
+                <div id="inChart" style="width: 100%; height: 400px;"></div>
+            </div>
+
+            <!--出庫グラフ-->
+            <div style="flex: 1;">
+                <h3 style="text-align: center;">出庫推移</h3>
+                <div id="outChart" style="width: 100%; height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <!--入出庫JS-->
+    <script src="/js/stock-in-chart.js"></script>
+    <script src="/js/stock-out-chart.js"></script>
+    <script>app.mount("#app")</script>
+</body>
+
+</html>

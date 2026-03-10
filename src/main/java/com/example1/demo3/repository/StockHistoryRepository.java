@@ -15,6 +15,7 @@ import com.example1.demo3.entity.StockHistory;
 
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Integer> {
     List<StockHistory> findByTypeOrderByDateTimeDesc(String type);
+    List<StockHistory> findByProductIdAndTypeOrderByDateTimeAsc(Long productId, String type);
 
     @Modifying
     @Transactional
@@ -37,3 +38,4 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
     List<StockHistory> findByProductIdOrderByDateTimeAsc(Integer productId);
     
 }
+

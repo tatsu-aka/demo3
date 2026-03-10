@@ -30,7 +30,7 @@ public class Product {
     @Column(name = "cost_price", nullable = false)
     private Integer costPrice;
 
-    @Column(name = "sale_price", nullable = false)
+    @Column(name = "sale_price", nullable = true)
     private Integer salePrice;
 
     @Column(name = "created_at", nullable = false)

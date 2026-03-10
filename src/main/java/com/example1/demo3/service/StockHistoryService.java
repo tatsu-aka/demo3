@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example1.demo3.dto.StockHistoryDto;
+import com.example1.demo3.dto.StockHistoryInDto;
+import com.example1.demo3.dto.StockHistoryOutDto;
 import com.example1.demo3.entity.StockHistory;
 import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.service.StockHistoryService;
@@ -69,5 +71,15 @@ public class StockHistoryService {
         List<StockHistory> list = stockHistoryRepository.findByProductIdOrderByDateTimeAsc(productId);
         return list.stream()
         .map(h -> new StockHistoryDto(h.getDateTime(), h.getStock())).toList();
+    }
+    //入庫グラフ用
+    public List<StockHistoryInDto> getInHistory(Long productId) {
+        return stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(productId, "IN").stream()
+        .map(h -> new StockHistoryInDto(h.getDateTime(), h.getQuantity())).toList();
+    }
+    //出庫グラフ用
+    public List<StockHistoryOutDto> getOutHistory(Long productId) {
+        return stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(productId, "OUT").stream()
+        .map(h -> new StockHistoryOutDto(h.getDateTime(), h.getQuantity())).toList();
     }
 }
