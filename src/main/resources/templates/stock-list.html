@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>在庫一覧</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #0078d4;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f7ff;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app" class="container">
+    <h2>在庫一覧</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>商品名</th>
+                <th>在庫数</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="s in stocks" :key="s.productId">
+                <td>{{ s.productName }}</td>
+                <td>{{ s.stock }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-top:20px;">
+        <a href="/product">商品一覧へ戻る</a>
+    </p>
+</div>
+
+<!-- Vue & Axios -->
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+const app = {
+    data() {
+        return {
+            stocks: []
+        };
+    },
+    mounted() {
+        axios.get("/api/stock/summary")
+            .then(res => this.stocks = res.data)
+            .catch(err => console.error(err));
+    }
+};
+
+Vue.createApp(app).mount("#app");
+</script>
+
+</body>
+</html>

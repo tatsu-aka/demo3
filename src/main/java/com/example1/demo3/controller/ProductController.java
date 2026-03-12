@@ -97,14 +97,6 @@ public class ProductController {
         return "product-out";
     }
 
-    // 出庫処理
-    @PostMapping("/out")
-    public String outProduct(@RequestParam Integer productId, @RequestParam Integer quantity,
-        @RequestParam String unit, @RequestParam String category) {
-            stockOutService.outStock(productId, quantity, unit, category);
-            return "redirect:/product";
-        }
-
     // 入庫フォーム
     @GetMapping("/in")
     public String showInForm(Model model) {
@@ -115,13 +107,5 @@ public class ProductController {
         model.addAttribute("categories", List.of("野菜", "果物"));
         model.addAttribute("units", List.of("個", "P", "ケース", "kg"));
         return "product-in";
-    }
-
-    // 入庫処理
-    @PostMapping("/in")
-    public String inProduct(@RequestParam Integer productId, @RequestParam Integer quantity,
-        @RequestParam Integer makerId, @RequestParam String unit, @RequestParam String category) {
-        stockInService.inStock(productId, quantity, makerId, unit, category);
-        return "redirect:/product";
     }
 }

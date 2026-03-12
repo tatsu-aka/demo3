@@ -71,70 +71,131 @@
 </head>
 
 <body>
-    <div class="container">
+    <div id="app" class="container">
         <h2>入庫</h2>
 
-        <form th:action="@{/product/in}" method="post">
-            <!-- 商品 -->
-            <div class="mb-3">
-                <label class="form-label">商品</label>
-                <!--商品選択-->
-                <select name="productId" class="form-select mb-2" onchange="updateInfo(this)">
-                    <option value="">選択してください</option>
-                    <option th:each="p : ${products}" th:value="${p.id}" th:data-category="${p.category}"
-                        th;data-unit="${p.unit}" th:data-maker="${p.maker.name}" th:text="${p.name}">
-                    </option>
-                </select>
-            </div>
+        <!-- 商品 -->
+        <div class="mb-3">
+            <label class="form-label">商品</label>
+            <!--商品選択-->
+            <select v-model="productId" class="form-select mb-2">
+                <option value="">選択してください</option>
+                <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }}</option>
+            </select>
+        </div>
 
-            <!--カテゴリ-->
-            <div class="mb-3">
-                <label class="form-label">カテゴリ</label>
-                <select name="category" class="form-select">
-                    <option value="">選択してください</option>
-                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
-                </select>
-            </div>
+        <!--カテゴリ-->
+        <div class="mb-3">
+            <label class="form-label">カテゴリ</label>
+            <select v-model="category" class="form-select">
+                <option value="">選択してください</option>
+                <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
+            </select>
+        </div>
 
-            <!--単位-->
-            <div class="mb-3">
-                <label class="form-label">単位</label>
-                <select name="unit" class="form-select">
-                    <option value="">選択してください</option>
-                    <option th:each="u : ${units}" th:value="${u}" th:text="${u}"></option>
-                </select>
-            </div>
+        <!--単位-->
+        <div class="mb-3">
+            <label class="form-label">単位</label>
+            <select v-model="unit" class="form-select">
+                <option value="">選択してください</option>
+                <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
+            </select>
+        </div>
 
-            <!--取引先-->
-            <div class="mb-3">
-                <label class="form-label">取引先</label>
-                <select name="makerId" class="form-select mb-2">
-                    <option value="">選択してください</option>
-                    <option th:each="m : ${makers}" th:value="${m.id}" th:text="${m.name}"></option>
-                </select>
-            </div>
+        <!--取引先-->
+        <div class="mb-3">
+            <label class="form-label">取引先</label>
+            <select v-model="makerId" class="form-select mb-2">
+                <option value="">選択してください</option>
+                <option v-for="m in makers" :key="m.id" :value="m.id">{{ m.name }}</option>
+            </select>
+        </div>
 
-            <!--数量-->
-            <div class="mb-3">
-                <label class="form-label">入庫数量</label>
-                <input type="number" name="quantity" min="1" required class="form-control">
-            </div>
+        <!--数量-->
+        <div class="mb-3">
+            <label class="form-label">入庫数量</label>
+            <input type="number" v-model="quantity" min="1" required class="form-control">
+        </div>
 
-            <button type="submit" class="btn btn-primary">入庫する</button>
-        </form>
+        <button class="btn btn-primary" @click="submit">入庫する</button>
+
+        <!--エラー表示-->
+        <div v-if="errors.length" class="alert alert-danger mt-3">
+            <ul>
+                <li v-for="e in errors" :key="e">{{ e }}</li>
+            </ul>
+        </div>
+
+        <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+
         <p class="mt-3">
-            <a th:href="@{/product}">商品一覧へ戻る</a>
+            <a href="/product">商品一覧へ戻る</a>
         </p>
     </div>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
-        function updateInfo(sel) {
-            const opt = sel.options[sel.selectedIndex];
-            document.getElementById("category").textContent = opt.dataset.category || "";
-            document.getElementById("makerInput").textContent = opt.dataset.maker || "";
-            document.getElementById("unitInput").textContent = opt.dataset.unit || "";
-        }
+        const app = {
+            data() {
+                return {
+                    products: [],
+                    categories: [],
+                    units: [],
+                    makers: [],
+                    productId: "",
+                    category: "",
+                    unit: "",
+                    makerId: "",
+                    quantity: "",
+                    errors: [],
+                    successMessage: ""
+                };
+            },
+
+            mounted() {
+                axios.get("/api/products").then(res => this.products = res.data);
+                axios.get("/api/master/categories").then(res => this.categories = res.data);
+                axios.get("/api/master/units").then(res => this.units = res.data);
+                axios.get("/api/master/makers").then(res => this.makers = res.data);
+            },
+
+            methods: {
+                submit() {
+                    this.errors = [];
+                    this.successMessage = "";
+
+                    axios.post("/api/stock/in", {
+                        productId: this.productId,
+                        quantity: this.quantity,
+                        makerId: this.makerId,
+                        unit: this.unit,
+                        category: this.category
+                    })
+                        .then(() => {
+                            this.successMessage = "入庫が完了しました";
+                            this.clearFrom();
+                        })
+                        .catch(err => {
+                            if (err.response && err.response.data) {
+                                this.errors = err.response.data;
+                            } else {
+                                this.errors = ["通信エラーが発生しました"];
+                            }
+                        });
+                },
+                clearFrom() {
+                    this.productId = "";
+                    this.quantity = "";
+                    this.makerId = "";
+                    this.unit = "";
+                    this.category = "";
+                }
+            }
+        };
+        Vue.createApp(app).mount("#app");
     </script>
+
 </body>
 
 </html>

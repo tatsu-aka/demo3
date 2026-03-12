@@ -71,82 +71,123 @@
 </head>
 
 <body>
+    <div id="app" class="container">
+        <h2>出庫</h2>
 
-    <div class="container">
-        <h1>出庫</h1>
+        <!-- 商品 -->
+        <div class="mb-3">
+            <label class="form-label">商品</label>
+            <select v-model="productId" class="form-select">
+                <option value="">選択してください</option>
+                <option v-for="p in products" :key="p.id" :value="p.id">
+                    {{ p.name }}
+                </option>
+            </select>
+        </div>
 
-        <form th:action="@{/product/out}" method="post">
+        <!-- カテゴリ -->
+        <div class="mb-3">
+            <label class="form-label">カテゴリ</label>
+            <select v-model="category" class="form-select">
+                <option value="">選択してください</option>
+                <option v-for="c in categories" :key="c" :value="c">
+                    {{ c }}
+                </option>
+            </select>
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label">商品</label>
-                <select name="productId" id="productSelect" required>
-                    <option value="">選択してください</option>
-                    <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}">
-                    </option>
-                </select>
-            </div>
+        <!-- 単位 -->
+        <div class="mb-3">
+            <label class="form-label">単位</label>
+            <select v-model="unit" class="form-select">
+                <option value="">選択してください</option>
+                <option v-for="u in units" :key="u" :value="u">
+                    {{ u }}
+                </option>
+            </select>
+        </div>
 
-            <div id="productInfo" style="display: none;">
-                
-            </div>
+        <!-- 数量 -->
+        <div class="mb-3">
+            <label class="form-label">出庫数量</label>
+            <input type="number" v-model="quantity" min="1" class="form-control">
+        </div>
 
-            <!--出庫数量-->
-            <div class="mb-3">
-                <label class="form-label">出庫数</label>
-                <input type="number" name="quantity" min="1" required class="form-control">
-            </div>
+        <button class="btn btn-danger" @click="submit">出庫する</button>
 
-            <!--単位-->
-            <div class="mb-3">
-                <label>単位：</label>
-                <select name="unit" id="unitInput" required>
-                    <option value="">選択してください</option>
-                    <option th:each="u : ${units}" th:value="${u}" th:text="${u}"></option>
-                </select>
-            </div>
+        <!-- エラー表示 -->
+        <div v-if="errors.length" class="alert alert-danger mt-3">
+            <ul>
+                <li v-for="e in errors" :key="e">{{ e }}</li>
+            </ul>
+        </div>
 
-            <!--カテゴリ-->
-            <div class="mb-3">
-                <label>カテゴリ：</label>
-                <select name="category" id="categoryInput" required>
-                    <option value="">選択してください</option>
-                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
-                </select>
-            </div>
+        <!-- 成功メッセージ -->
+        <div v-if="successMessage" class="alert alert-success mt-3">
+            {{ successMessage }}
+        </div>
 
-            <button type="submit" class="btn btn-danger">出庫する</button>
-        </form>
-
-        <p>
-            <a th:href="@{/product}">商品一覧へ戻る</a>
+        <p class="mt-3">
+            <a href="/product">商品一覧へ戻る</a>
         </p>
     </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
     <script>
-        let products = [];
+        const app = {
+            data() {
+                return {
+                    products: [],
+                    categories: [],
+                    units: [],
+                    productId: "",
+                    category: "",
+                    unit: "",
+                    quantity: "",
+                    errors: [],
+                    successMessage: ""
+                };
+            },
+            mounted() {
+                axios.get("/api/products").then(res => this.products = res.data);
+                axios.get("/api/master/categories").then(res => this.categories = res.data);
+                axios.get("/api/master/units").then(res => this.units = res.data);
+            },
+            methods: {
+                submit() {
+                    this.errors = [];
+                    this.successMessage = "";
 
-        fetch("/product/api/products")
-            .then(res => res.json())
-            .then(data => {
-                products = data;
+                    axios.post("/api/stock/out", {
+                        productId: this.productId,
+                        quantity: this.quantity,
+                        unit: this.unit,
+                        category: this.category
+                    })
+                        .then(() => {
+                            this.successMessage = "出庫が完了しました";
+                            this.clearForm();
+                        })
+                        .catch(err => {
+                            if (err.response && err.response.data) {
+                                this.errors = err.response.data;
+                            } else {
+                                this.errors = ["通信エラーが発生しました"];
+                            }
+                        });
+                },
+                clearForm() {
+                    this.productId = "";
+                    this.quantity = "";
+                    this.unit = "";
+                    this.category = "";
+                }
+            }
+        };
 
-                const select = document.getElementById("productSelect");
-
-                select.addEventListener("change", function () {
-                    const id = Number(this.value);
-                    const product = products.find(p => p.id === id);
-
-                    if (product) {
-                        document.getElementById("productInfo").style.display = "block";
-                        document.getElementById("category").textContent = product.category;
-                        document.getElementById("unit").textContent = product.unit;
-                        document.getElementById("stock").textContent = product.stock;
-
-                        document.getElementById("categoryInput").value = product.category;
-                        document.getElementById("unitInput").value = product.unit;
-                    }
-                });
-            });
+        Vue.createApp(app).mount("#app");
     </script>
 </body>
-
-</html>
