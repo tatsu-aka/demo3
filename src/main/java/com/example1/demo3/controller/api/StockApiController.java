@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example1.demo3.dto.StockInRequest;
 import com.example1.demo3.dto.StockOutRequest;
 import com.example1.demo3.dto.StockSummaryDto;
-import com.example1.demo3.entity.StockHistory;
 import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.service.StockInService;
 import com.example1.demo3.service.StockOutService;

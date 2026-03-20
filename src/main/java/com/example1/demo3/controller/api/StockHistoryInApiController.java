@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example1.demo3.dto.StockHistoryInDto;
-import com.example1.demo3.entity.StockHistory;
 import com.example1.demo3.service.StockHistoryService;
 
 @RestController

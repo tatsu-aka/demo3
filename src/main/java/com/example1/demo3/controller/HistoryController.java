@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example1.demo3.entity.StockHistory;
-import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.service.StockHistoryService;
 
 @Controller
