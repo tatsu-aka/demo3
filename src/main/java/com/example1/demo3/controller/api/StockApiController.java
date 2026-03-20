@@ -6,11 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example1.demo3.dto.StockByMakerDto;
 import com.example1.demo3.dto.StockInRequest;
 import com.example1.demo3.dto.StockOutRequest;
 import com.example1.demo3.dto.StockSummaryDto;
@@ -64,4 +66,11 @@ public class StockApiController {
     public List<StockSummaryDto> summary() {
         return stockHistoryRepository.getStockSummary();
     }
+
+    // 取引先別の在庫内訳
+    @GetMapping("/summary/maker/{productName}")
+    public List<StockByMakerDto> getStockByMaker(@PathVariable String productName) {
+        return stockHistoryRepository.getStockByMaker(productName);
+    }
+
 }

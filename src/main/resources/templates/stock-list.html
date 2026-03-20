@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>在庫一覧</title>
@@ -33,7 +34,8 @@
             margin-top: 15px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             border-bottom: 1px solid #ddd;
             text-align: left;
@@ -51,49 +53,85 @@
 </head>
 
 <body>
-<div id="app" class="container">
-    <h2>在庫一覧</h2>
+    <div id="app" class="container">
+        <h2>在庫一覧</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>商品名</th>
-                <th>在庫数</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="s in stocks" :key="s.productId">
-                <td>{{ s.productName }}</td>
-                <td>{{ s.stock }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>商品名</th>
+                    <th>在庫数</th>
+                    <th>内訳</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="s in stocks" :key="s.productName">
+                    <td>{{ s.productName }}</td>
+                    <td>{{ s.stock }}</td>
+                    <td>
+                        <button @click="showDetail(s.productName)">内訳</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-    <p style="margin-top:20px;">
-        <a href="/product">商品一覧へ戻る</a>
-    </p>
-</div>
+        <p style="margin-top:20px;">
+            <a href="/product">商品一覧へ戻る</a>
+        </p>
 
-<!-- Vue & Axios -->
-<script src="https://unpkg.com/vue@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<script>
-const app = {
-    data() {
-        return {
-            stocks: []
-        };
-    },
-    mounted() {
-        axios.get("/api/stock/summary")
-            .then(res => this.stocks = res.data)
-            .catch(err => console.error(err));
-    }
-};
+        <!-- 内訳モーダル -->
+        <div v-if="showModal" class="modal-overlay">
+            <div class="modal">
+                <h3>取引先別 内訳</h3>
 
-Vue.createApp(app).mount("#app");
-</script>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>取引先</th>
+                            <th>在庫数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="d in detail" :key="d.maker">
+                            <td>{{ d.maker }}</td>
+                            <td>{{ d.stock }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button @click="showModal = false">閉じる</button>
+            </div>
+        </div>
+
+        <style>
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.4);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .modal {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                width: 400px;
+            }
+        </style>
+    </div>
+
+    <!-- Vue & Axios -->
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/stock-list.js"></script>
 
 </body>
+
 </html>
