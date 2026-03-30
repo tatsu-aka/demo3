@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>価格変更</title>
+
+        <style>
+            .error {
+                color: red;
+                font-size: 14px;
+                margin-top: 4px;
+            }
+
+            .success {
+                color: green;
+                font-size: 16px;
+                margin-top: 10px;
+            }
+
+            label {
+                display: block;
+                margin-top: 15px;
+            }
+
+            input, select {
+                padding: 6px;
+                width: 200px;
+            }
+
+            button {
+                margin-top: 20px;
+                padding: 8px 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app">
+            <h2>価格変更</h2>
+
+            <!--商品選択-->
+            <label>商品</label>
+            <select v-model="productId">
+                <option disabled value="">選択してください</option>
+                <option v-for="p in products" :value="p.id">{{ p.name }} ({{ p.makerName }})</option>
+            </select>
+
+            <div class="error" v-if="errors.productId">{{ errors.productId }}</div>
+
+            <!--新しい原価-->
+            <label>新しい原価</label>
+            <input type="number" v-model="newCostPrice">
+            <div class="error" v-if="errors.newCostPrice">{{ errors.newCostPrice }}</div>
+
+            <!--適用開始日-->
+            <label>適用開始日</label>
+            <input type="date" v-model="startDate">
+            <div class="error" v-if="errors.startDate">{{ errors.startDate }}</div>
+
+            <!--ボタン-->
+            <button @click="changePrice">変更する</button>
+
+            <!--成功メッセージ-->
+            <div class="success" v-if="successMessage">{{ successMessage }}</div>
+
+        </div>
+
+        <!--CDN-->
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/price-change.js"></script>
+    </body>
+</html>
