@@ -42,7 +42,7 @@ public class ProductPrice {
         return id;
     }
 
-    public Product geProduct() {
+    public Product getProduct() {
         return product;
     }
     public void setProduct(Product product) {

@@ -10,4 +10,9 @@ public class PriceChangeController {
     public String priceChange() {
         return "price-change";
     }
+
+    @GetMapping("/price-history")
+    public String priceHistory() {
+        return "price-history";
+    }
 }

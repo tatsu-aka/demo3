@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example1.demo3.dto.ProductPriceDto;
 import com.example1.demo3.entity.ProductPrice;
 import com.example1.demo3.repository.ProductPriceRepository;
 import com.example1.demo3.service.ProductPriceService;
@@ -34,8 +35,8 @@ public class ProductPriceApiController {
 
     //履歴取得　API
     @GetMapping("/{id}/price-history")
-    public List<ProductPrice> getPriceHistory(@PathVariable("id") Integer productId) {
-        return priceRepository.getPriceHistory(productId);
+    public List<ProductPriceDto> getPriceHistory(@PathVariable("id") Integer productId) {
+        return priceService.getHistory(productId);
     }
 
     // DTOリクエスト用
