@@ -33,7 +33,7 @@
         <button type="submit" class="btn btn-primary">検索</button>
     </form>
 
-    <!-- 新規登録ボタン -->
+    <!-- ボタン -->
     <div class="mb-3">
         <a href="/stock/list" class="btn btn-primary me-2">在庫一覧</a>
         <a href="/product/in" class="btn btn-primary me-2">入庫</a>
@@ -41,6 +41,7 @@
         <a href="/makers" class="btn btn-danger me-2">取引先一覧</a>
         <a href="/products/master" class="btn btn-danger me-2">商品マスタ一覧</a>
         <a href="/products/stock-chart" class="btn btn-info">在庫推移ページ</a>
+        <a href="/price-change" class="btn btn-info">価格変更登録</a>
     </div>
 
     <!-- 商品一覧テーブル -->
@@ -53,7 +54,6 @@
                 <th>在庫</th>
                 <th>単位</th>
                 <th>カテゴリ</th>
-                <th>原価</th>
                 <th>操作</th>
             </tr>
         </thead>
@@ -66,7 +66,6 @@
                 <td th:text="${p.stock}"></td>
                 <td th:text="${p.unit}"></td>
                 <td th:text="${p.category}"></td>
-                <td th:text="${p.costPrice}"></td>
                 
 
                 <td>

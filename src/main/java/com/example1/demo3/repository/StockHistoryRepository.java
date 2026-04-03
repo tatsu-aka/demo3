@@ -8,44 +8,57 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example1.demo3.dto.StockByMakerDto;
 import com.example1.demo3.dto.StockSummaryDto;
 import com.example1.demo3.entity.StockHistory;
 
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Integer> {
-        List<StockHistory> findByTypeOrderByDateTimeDesc(String type);
+    List<StockHistory> findByTypeOrderByDateTimeDesc(String type);
 
-        List<StockHistory> findByProductIdAndTypeOrderByDateTimeAsc(Long productId, String type);
+    List<StockHistory> findByProductIdAndTypeOrderByDateTimeAsc(Long productId, String type);
 
-        @Modifying
-        @Transactional
-        @Query("DELETE FROM StockHistory h WHERE h.product.id = :productId")
-        void deleteByProductId(@Param("productId") Integer productId);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM StockHistory h WHERE h.product.id = :productId")
+    void deleteByProductId(@Param("productId") Integer productId);
 
-        // 商品名で検索 出庫履歴
-        @Query("SELECT h FROM StockHistory h " + "JOIN h.product p " + "WHERE h.type = 'OUT' "
-                        + "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE CONCAT('%', :keyword, '%')) "
-                        + "ORDER BY h.dateTime DESC")
-        List<StockHistory> searchOut(String keyword);
+    // 商品名で検索 出庫履歴
+    @Query("SELECT h FROM StockHistory h " + "JOIN h.product p " + "WHERE h.type = 'OUT' "
+            + "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE CONCAT('%', :keyword, '%')) "
+            + "ORDER BY h.dateTime DESC")
+    List<StockHistory> searchOut(String keyword);
 
-        // 商品名で検索 入庫履歴
-        @Query("SELECT h FROM StockHistory h " + "JOIN h.product p " + "WHERE h.type = 'IN' "
-                        + "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE CONCAT('%', :keyword, '%')) "
-                        + "ORDER BY h.dateTime DESC")
-        List<StockHistory> searchIn(String keyword);
+    // 商品名で検索 入庫履歴
+    @Query("SELECT h FROM StockHistory h " + "JOIN h.product p " + "WHERE h.type = 'IN' "
+            + "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE CONCAT('%', :keyword, '%')) "
+            + "ORDER BY h.dateTime DESC")
+    List<StockHistory> searchIn(String keyword);
 
-        // グラフ用：指定商品の履歴を昇順で取得
-        List<StockHistory> findByProductIdOrderByDateTimeAsc(Integer productId);
+    // グラフ用：指定商品の履歴を昇順で取得
+    List<StockHistory> findByProductIdOrderByDateTimeAsc(Integer productId);
 
-        // 在庫一覧集計用
-        @Query("""
-                            SELECT new com.example1.demo3.dto.StockSummaryDto(
-                                h.product.id,
-                                h.product.name,
-                                SUM(CASE WHEN h.type = 'IN' THEN h.quantity ELSE -h.quantity END)
-                            )
-                            FROM StockHistory h
-                            GROUP BY h.product.id, h.product.name
-                        """)
-        List<StockSummaryDto> getStockSummary();
+    // 在庫一覧集計用（商品合計）
+    @Query("""
+                SELECT new com.example1.demo3.dto.StockSummaryDto(
+                    h.product.name,
+                    SUM(CASE WHEN h.type = 'IN' THEN h.quantity ELSE -h.quantity END)
+                )
+                FROM StockHistory h
+                GROUP BY h.product.name
+            """)
+    List<StockSummaryDto> getStockSummary();
+
+    // 在庫一覧集計用（取引先別）
+    @Query("""
+                SELECT new com.example1.demo3.dto.StockByMakerDto(
+                    h.product.name,
+                    h.maker.name,
+                    SUM(CASE WHEN h.type = 'IN' THEN h.quantity ELSE -h.quantity END)
+                )
+                FROM StockHistory h
+                WHERE h.product.name = :productName
+                GROUP BY h.product.name, h.maker.name
+            """)
+    List<StockByMakerDto> getStockByMaker(String productName);
 
 }

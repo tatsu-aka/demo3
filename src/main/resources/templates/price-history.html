@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>価格変更履歴</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3.4.15/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 20px;
+            }
+
+            select {
+                padding: 6px;
+                font-size: 16px;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 600px;
+                margin-top: 20px;
+            }
+
+            th, td {
+                border: 1px solid #ccc;
+                padding: 8px 12px;
+                text-align: left;
+            }
+
+            th {
+                background: #f0f0f0;
+            }
+            h2 {
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app">
+
+            <h2>価格変更履歴</h2>
+
+            <label>商品選択</label>
+            <select v-model="selectedProductId" @change="loadHistory">
+                <option value="">選択してください</option>
+                <option v-for="p in products" :value="p.id" :key="p.id">
+                    {{ p.name }} ({{ p.makerName}})
+                </option>
+            </select>
+
+            <div v-if="selectedProductId && history.length > 0">
+                <h3>{{ productName }} ({{ makerName }}) の価格変更履歴</h3>
+
+                <table>
+                    <tr>
+                        <th>原価</th>
+                        <th>開始日</th>
+                        <th>終了日</th>
+                    </tr>
+                    <tr v-for="h in history" :key="h.startDate">
+                        <td>{{ h.costPrice }}</td>
+                        <td>{{ h.startDate }}</td>
+                        <td>{{ h.endDate ? h.endDate : '未定' }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <p v-if="selectedProductId && history.length ===0">
+                価格履歴がありません
+            </p>
+        </div>
+
+        <script src="/js/price-history.js"></script>
+    </body>
+</html>
