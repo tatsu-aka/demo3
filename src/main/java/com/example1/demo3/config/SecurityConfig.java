@@ -26,11 +26,19 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())// 無効化
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/css/**", "/js/**").permitAll()// ログイン画面はok
+                        
+                        //権限制御
+                        .requestMatchers("/product/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/price/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/makers/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/stock/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/products/master/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()// ログイン必須
                 )
 
                 .formLogin(form -> form.loginPage("/login")// login.htmlのパス
-                        .defaultSuccessUrl("/product/list", true)// ログイン成功後の移動先
+                        .loginProcessingUrl("/login")//POST先
+                        .defaultSuccessUrl("/product", true)// ログイン成功後の移動先
                         .permitAll())
 
                 .logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll());
