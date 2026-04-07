@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()// ログイン必須
                 )
 
+                .exceptionHandling(ex -> ex.accessDeniedPage("/error/403"))
+
                 .formLogin(form -> form.loginPage("/login")// login.htmlのパス
                         .loginProcessingUrl("/login")//POST先
                         .defaultSuccessUrl("/product", true)// ログイン成功後の移動先
