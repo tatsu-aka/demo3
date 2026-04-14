@@ -33,6 +33,8 @@ public class SecurityConfig {
                         .requestMatchers("/makers/**").hasAnyRole("ADMIN")
                         .requestMatchers("/stock/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/products/master/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/users/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()// ログイン必須
                 )
 

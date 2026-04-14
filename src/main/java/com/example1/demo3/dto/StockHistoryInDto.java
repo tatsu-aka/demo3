@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 
 public class StockHistoryInDto {
     private LocalDateTime dateTime;
-    private Integer quantuty;
+    private Integer quantity;
 
     public StockHistoryInDto(LocalDateTime dateTime, Integer quantity) {
         this.dateTime = dateTime;
-        this.quantuty = quantity;
+        this.quantity = quantity;
     }
 
     public LocalDateTime getDateTime() {
@@ -16,6 +16,6 @@ public class StockHistoryInDto {
     }
 
     public Integer getQuantity() {
-        return quantuty;
+        return quantity;
     }
 }
