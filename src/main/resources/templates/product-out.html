@@ -85,6 +85,18 @@
             </select>
         </div>
 
+        <!-- 取引先 -->
+        <div class="mb-3">
+            <label class="form-label">取引先</label>
+            <select v-model="makerId" class="form-select">
+                <option value="">選択してください</option>
+                <option v-for="m in makers" :key="m.id" :value="m.id">
+                    {{ m.name }}
+                </option>
+            </select>
+        </div>
+
+
         <!-- カテゴリ -->
         <div class="mb-3">
             <label class="form-label">カテゴリ</label>
@@ -148,13 +160,16 @@
                     unit: "",
                     quantity: "",
                     errors: [],
-                    successMessage: ""
+                    successMessage: "",
+                    makers: [],
+                    makerId: ""
                 };
             },
             mounted() {
                 axios.get("/api/products").then(res => this.products = res.data);
                 axios.get("/api/master/categories").then(res => this.categories = res.data);
                 axios.get("/api/master/units").then(res => this.units = res.data);
+                axios.get("/api/makers").then(res => this.makers = res.data);
             },
             methods: {
                 submit() {
@@ -165,7 +180,8 @@
                         productId: this.productId,
                         quantity: this.quantity,
                         unit: this.unit,
-                        category: this.category
+                        category: this.category,
+                        makerId: this.makerId
                     })
                         .then(() => {
                             this.successMessage = "出庫が完了しました";
@@ -184,6 +200,7 @@
                     this.quantity = "";
                     this.unit = "";
                     this.category = "";
+                    this.makerId = "";
                 }
             }
         };

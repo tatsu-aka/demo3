@@ -94,6 +94,7 @@ public class ProductController {
         //カテゴリと単位のリスト
         model.addAttribute("categories", List.of("野菜", "果物"));
         model.addAttribute("units", List.of("個", "P", "ケース", "kg"));
+        model.addAttribute("makers", makerService.findAll());
         return "product-out";
     }
 

@@ -18,8 +18,12 @@ public class StockOutRequest {
     @NotBlank(message = "カテゴリは必須です")
     private String category;
 
+    @NotNull(message = "取引先は必須です")
+    private Integer makerId;
+
     public Integer getProductId() { return productId; }
     public Integer getQuantity() { return quantity; }
     public String getUnit() { return unit; }
     public String getCategory() { return category; }
+    public Integer getMakerId() { return makerId; }
 }

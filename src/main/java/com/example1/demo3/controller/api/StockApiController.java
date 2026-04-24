@@ -57,7 +57,7 @@ public class StockApiController {
             return ResponseEntity.badRequest().body(messages);
         }
 
-        stockOutService.outStock(req.getProductId(), req.getQuantity(), req.getUnit(), req.getCategory());
+        stockOutService.outStock(req.getProductId(), req.getQuantity(), req.getUnit(), req.getCategory(), req.getMakerId());
         return ResponseEntity.ok("ok");
     }
 
