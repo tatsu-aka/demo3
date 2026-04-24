@@ -4,7 +4,7 @@ const app = Vue.createApp({
             productId: "",
             products: [],
             inHistory: [],
-            outHistory: []
+            outHistory: [],
         };
     },
 
