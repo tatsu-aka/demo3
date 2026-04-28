@@ -356,6 +356,7 @@ flowchart LR
     CONTROLLER --> SERVICE
     SERVICE --> REPOSITORY
     REPOSITORY --> DB
+
 ```
 
 # 工夫した点・苦労した点
