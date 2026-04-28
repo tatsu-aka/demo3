@@ -20,6 +20,7 @@ public class StockHistoryApiController {
         this.stockHistoryService = stockHistoryService;
     }
 
+    //在庫推移用
     @GetMapping("/{productId}")
     public List<StockHistoryDto> getStockHistory(@PathVariable Integer productId) {
         return stockHistoryService.getStockHistoryForChart(productId);
