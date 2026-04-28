@@ -336,7 +336,6 @@ erDiagram
 - MySQL：商品・在庫・履歴データの永続化
 
 ```mermaid
-
 flowchart LR
 
     subgraph Frontend[Frontend (Vue.js)]
@@ -357,7 +356,6 @@ flowchart LR
     CONTROLLER --> SERVICE
     SERVICE --> REPOSITORY
     REPOSITORY --> DB
-
 ```
 
 # 工夫した点・苦労した点
