@@ -312,13 +312,12 @@ erDiagram
         integer quantity
     }
 
-    リレーション  
-    MAKERS ||--o{ PRODUCTS : "1:N" }  
-    PRODUCTS ||--o{ PRODUCT_PRICES : "1:N" }
-    PRODUCTS ||--o{ STOCK_HISTORY : "1:N" }
-    PRODUCTS ||--o{ STOCK_DETAIL : "1:N" }
-    MAKERS ||--o{ STOCK_HISTORY : "1:N" }
-    MAKERS ||--o{ STOCK_DETAIL : "1:N" }
+    MAKERS ||--o{ PRODUCTS : "1:N" 
+    PRODUCTS ||--o{ PRODUCT_PRICES : "1:N"
+    PRODUCTS ||--o{ STOCK_HISTORY : "1:N"
+    PRODUCTS ||--o{ STOCK_DETAIL : "1:N"
+    MAKERS ||--o{ STOCK_HISTORY : "1:N"
+    MAKERS ||--o{ STOCK_DETAIL : "1:N"
 ```
 
 - MAKERS と PRODUCTS は 1:N
