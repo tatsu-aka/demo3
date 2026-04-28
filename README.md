@@ -334,33 +334,29 @@ erDiagram
 - Service：ビジネスロジック（在庫計算・価格履歴処理など）
 - Repository：JPA による DB アクセス
 - MySQL：商品・在庫・履歴データの永続化
-
 ```mermaid
 flowchart LR
 
-    %% Frontend
     subgraph Frontend[Frontend (Vue.js)]
         VUE[Vue Components]
         API[Axios API Client]
         VUE --> API
     end
 
-    %% Backend
     subgraph Backend[Backend (Spring Boot)]
         CONTROLLER[Controller Layer]
         SERVICE[Service Layer]
         REPOSITORY[Repository Layer]
     end
 
-    %% Database
     DB[(MySQL Database)]
 
-    %% Data Flow
     API --> CONTROLLER
     CONTROLLER --> SERVICE
     SERVICE --> REPOSITORY
     REPOSITORY --> DB
 ```
+
 # 工夫した点・苦労した点  
 ## アーキテクチャの理解と責務の分離
 - 最初は設計や三層アーキテクチャの理解が全くない状態からスタートしました。開発を進める中でController/Service/Repositoryの役割を学び、コードが複雑にならないように徐々に責務を分離していきました。  
