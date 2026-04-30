@@ -335,27 +335,6 @@ erDiagram
 - Repository：JPA による DB アクセス
 - MySQL：商品・在庫・履歴データの永続化
 
-```mermaid
-flowchart LR
-    subgraph Frontend[Frontend (Vue.js)]
-        VUE[Vue Components]
-        API[Axios API Client]
-        VUE --> API
-    end
-
-    subgraph Backend[Backend (Spring Boot)]
-        CONTROLLER[Controller Layer]
-        SERVICE[Service Layer]
-        REPOSITORY[Repository Layer]
-    end
-
-    DB[(MySQL Database)]
-
-    API --> CONTROLLER
-    CONTROLLER --> SERVICE
-    SERVICE --> REPOSITORY
-    REPOSITORY --> DB
-```
 
 # 工夫した点・苦労した点
 ## アーキテクチャの理解と責務の分離
@@ -386,7 +365,27 @@ flowchart LR
 - テストコード（JUnit）のよるロジックのテスト
   在庫計算・価格変更履歴処理などビジネスロジックが増えてきたため、単体テストを追加して保守性を高めたい。
 
+```mermaid
+flowchart LR
+    subgraph Frontend[Frontend (Vue.js)]
+        VUE[Vue Components]
+        API[Axios API Client]
+        VUE --> API
+    end
 
+    subgraph Backend[Backend (Spring Boot)]
+        CONTROLLER[Controller Layer]
+        SERVICE[Service Layer]
+        REPOSITORY[Repository Layer]
+    end
+
+    DB[(MySQL Database)]
+
+    API --> CONTROLLER
+    CONTROLLER --> SERVICE
+    SERVICE --> REPOSITORY
+    REPOSITORY --> DB
+```
 
 
 
