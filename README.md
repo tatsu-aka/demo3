@@ -337,7 +337,6 @@ erDiagram
 
 ```mermaid
 flowchart LR
-
     subgraph Frontend[Frontend (Vue.js)]
         VUE[Vue Components]
         API[Axios API Client]
@@ -356,7 +355,6 @@ flowchart LR
     CONTROLLER --> SERVICE
     SERVICE --> REPOSITORY
     REPOSITORY --> DB
-
 ```
 
 # 工夫した点・苦労した点
