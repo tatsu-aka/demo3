@@ -1,12 +1,12 @@
 ```mermaid
 graph LR
-    subgraph Frontend[Frontend (Vue.js)]
+    subgraph Frontend
         VUE[Vue Components]
         API[Axios API Client]
         VUE --> API
     end
 
-    subgraph Backend[Backend (Spring Boot)]
+    subgraph Backend
         CONTROLLER[Controller Layer]
         SERVICE[Service Layer]
         REPOSITORY[Repository Layer]
