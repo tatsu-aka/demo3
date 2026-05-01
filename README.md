@@ -335,8 +335,27 @@ erDiagram
 - Repository：JPA による DB アクセス
 - MySQL：商品・在庫・履歴データの永続化  
 
-アーキテクチャ図はこちらから  
-[architecture.md](./architecture.md)
+```mermaid
+graph LR
+    subgraph Frontend
+        VUE[Vue Components]
+        API[Axios API Client]
+        VUE --> API
+    end
+
+    subgraph Backend
+        CONTROLLER[Controller Layer]
+        SERVICE[Service Layer]
+        REPOSITORY[Repository Layer]
+    end
+
+    DB[(MySQL Database)]
+
+    API --> CONTROLLER
+    CONTROLLER --> SERVICE
+    SERVICE --> REPOSITORY
+    REPOSITORY --> DB
+```
 
 # 工夫した点・苦労した点
 ## アーキテクチャの理解と責務の分離
