@@ -11,7 +11,7 @@ docker compose up -d
 
 # 使用技術
 ## Backend
-- java17
+- java21
 - Spring Boot3
     REST API、DI、設定管理などバックエンド全体を構築。
     Spring Securityによるログイン・認可、Spring Data JPAによるDBアクセスも担当。
@@ -34,7 +34,7 @@ docker compose up -d
 - Axios
     REST APIとの通信に使用。
     在庫登録、価格変更、履歴取得などの非同期処理に使用。
-- Chart.js
+- EChart.js
     在庫推移グラフの描画に使用。
 
 ## Infrastructure
@@ -69,7 +69,7 @@ docker compose up -d
     「内訳」ボタンでメーカー別の在庫詳細をモーダル表示。
 
 ## 在庫推移グラフ
-- Chart.jsを使用した在庫推移の可視化
+- EChart.jsを使用した在庫推移の可視化
     商品ごとの入出庫履歴をもとに、日付ごとの在庫を棒グラフで表示。
 
 ## 価格履歴管理
@@ -132,7 +132,7 @@ docker compose up -d
 ---
 
 ## 在庫推移グラフ
-Chart.jsを使用して、商品ごとの在庫推移を可視化します。
+EChart.jsを使用して、商品ごとの在庫推移を可視化します。
 入出庫履歴をもとに日付ごとの在庫量をグラフ表示します。
 
 ![在庫推移グラフ](./images/stock-graph.png)
