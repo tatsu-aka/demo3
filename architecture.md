@@ -1,5 +1,5 @@
 ```mermaid
-flowchart LR
+graph LR
     subgraph Frontend[Frontend (Vue.js)]
         VUE[Vue Components]
         API[Axios API Client]
