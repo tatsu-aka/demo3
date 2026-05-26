@@ -9,6 +9,7 @@ import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.dto.ProductRequest;
 import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
+import com.example1.demo3.exception.ResourceNotFoundException;
 import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockHistoryRepository;
@@ -87,5 +88,13 @@ public class ProductService {
     public List<ProductDto> findAllDto() {
         return productRepository.findAll().stream().map(p -> new ProductDto(p.getId(), p.getName(), p.getCategory(),
                 p.getUnit(), p.getStock(), p.getMaker() != null ? p.getMaker().getName() : null)).toList();
+    }
+
+    //商品削除
+    public void deleteProduct(Integer id) {
+        Product product = productRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));
+
+        productRepository.delete(product);
     }
 }

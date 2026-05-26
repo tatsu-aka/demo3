@@ -5,6 +5,7 @@ import java.security.Security;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/products/master/**").hasAnyRole("ADMIN")
                         .requestMatchers("/users/**").hasAnyRole("ADMIN")
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()// ログイン必須
                 )
 

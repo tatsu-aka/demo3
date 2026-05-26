@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,5 +61,12 @@ public class ProductApiController {
         }
         productService.update(id, req);
         return ResponseEntity.ok("ok");
+    }
+
+    //商品削除
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
