@@ -61,4 +61,8 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
             """)
     List<StockByMakerDto> getStockByMaker(String productName);
 
+    @Modifying
+    @Query("UPDATE StockHistory sh SET sh.product = NULL WHERE sh.product.id = :id")
+    void clearProductId(Integer id);
+
 }

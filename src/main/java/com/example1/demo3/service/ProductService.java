@@ -12,6 +12,7 @@ import com.example1.demo3.entity.Product;
 import com.example1.demo3.exception.ResourceNotFoundException;
 import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.repository.StockDetailRepository;
 import com.example1.demo3.repository.StockHistoryRepository;
 
 @Service
@@ -20,12 +21,14 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final StockHistoryRepository stockHistoryRepository;
     private final MakerRepository makerRepository;
+    private final StockDetailRepository stockDetailRepository;
 
     public ProductService(ProductRepository productRepository, StockHistoryRepository stockHistoryRepository,
-            MakerRepository makerRepository) {
+            MakerRepository makerRepository, StockDetailRepository stockDetailRepository) {
         this.productRepository = productRepository;
         this.stockHistoryRepository = stockHistoryRepository;
         this.makerRepository = makerRepository;
+        this.stockDetailRepository = stockDetailRepository;
     }
 
     // 商品一覧
@@ -91,10 +94,15 @@ public class ProductService {
     }
 
     //商品削除
+    @Transactional
     public void deleteProduct(Integer id) {
-        Product product = productRepository.findById(id)
+        stockDetailRepository.clearProductId(id);
+
+        stockHistoryRepository.clearProductId(id);
+
+        productRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));
 
-        productRepository.delete(product);
+        productRepository.deleteById(id);
     }
 }

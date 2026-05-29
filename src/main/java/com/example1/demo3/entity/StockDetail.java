@@ -18,7 +18,7 @@ public class StockDetail {
 
     // 商品
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", nullable = true)
     private Product product;
 
     // 取引先（メーカー）
