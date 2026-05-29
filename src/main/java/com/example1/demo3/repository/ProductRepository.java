@@ -22,10 +22,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                     p.stock,
                     m.name
                 )
-                FROM Product p
-                LEFT JOIN p.maker m
-                ORDER BY p.id
+                FROM StockDetail sd
+                JOIN sd.product p
+                JOIN sd.maker m
+                ORDER BY p.id, m.id
             """)
-    List<ProductDto> findAllDto();
+    List<ProductDto> findAllWithMakerFromStockDetail();
 
 }

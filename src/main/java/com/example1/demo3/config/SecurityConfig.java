@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/products/master/**").hasAnyRole("ADMIN")
                         .requestMatchers("/users/**").hasAnyRole("ADMIN")
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()// ログイン必須
                 )
 

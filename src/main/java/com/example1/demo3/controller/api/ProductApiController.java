@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.dto.ProductRequest;
+import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.repository.StockDetailRepository;
 import com.example1.demo3.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -24,15 +26,17 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/products")
 public class ProductApiController {
     private final ProductService productService;
+    private final StockDetailRepository stockDetailRepository;
 
-    public ProductApiController(ProductService productService) {
+    public ProductApiController(ProductService productService, StockDetailRepository stockDetailRepository) {
         this.productService = productService;
+        this.stockDetailRepository = stockDetailRepository;
     }
 
     //商品一覧　（出力DTO）
     @GetMapping
     public List<ProductDto> getProducts() {
-        return productService.findAllDto();
+        return stockDetailRepository.findAllForList();
     }
     
     //商品登録　（入力DTO＋バリデーション）
