@@ -14,7 +14,7 @@ const app = Vue.createApp({
     methods: {
         //在庫一覧
         loadStocks() {
-            axios.get("/api/stock/summary")
+            axios.get("/api/products/list-by-maker")
                 .then(res => {
                     this.stocks = res.data;
                 })
@@ -22,13 +22,29 @@ const app = Vue.createApp({
         },
 
         // 内訳取得
-        showDetail(productName) {
-            axios.get(`/api/stock/summary/maker/${productName}`)
+        showDetail(productId) {
+            axios.get(`/api/stock-detail/${productId}`)
                 .then(res => {
                     this.detail = res.data;
                     this.showModal = true;
                 })
                 .catch(err => console.error(err));
+        },
+
+        async deleteDetail(id) {
+            if (!confirm("本当に削除しますか？")) return;
+
+            try {
+                await axios.delete(`/api/stock-detail/${id}`);
+
+                // ★ 一覧を再取得
+                const res = await axios.get("/api/products/list-by-maker");
+                this.stocks = res.data;
+
+                alert("削除しました");
+            } catch (error) {
+                alert("削除に失敗しました");
+            }
         }
     }
 });

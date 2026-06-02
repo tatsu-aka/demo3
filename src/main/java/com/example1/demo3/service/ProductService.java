@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example1.demo3.dto.ProductDto;
+import com.example1.demo3.dto.ProductMakerStockDto;
 import com.example1.demo3.dto.ProductRequest;
 import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
@@ -104,5 +105,9 @@ public class ProductService {
         .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));
 
         productRepository.deleteById(id);
+    }
+
+    public List<ProductMakerStockDto> findProductMakerStockList() {
+        return productRepository.findProductMakerStockList();
     }
 }

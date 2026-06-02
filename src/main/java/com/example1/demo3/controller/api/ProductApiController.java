@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example1.demo3.dto.ProductDto;
+import com.example1.demo3.dto.ProductMakerStockDto;
 import com.example1.demo3.dto.ProductRequest;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockDetailRepository;
@@ -36,7 +37,7 @@ public class ProductApiController {
     //商品一覧　（出力DTO）
     @GetMapping
     public List<ProductDto> getProducts() {
-        return stockDetailRepository.findAllForList();
+        return productService.findAllDto();
     }
     
     //商品登録　（入力DTO＋バリデーション）
@@ -72,5 +73,10 @@ public class ProductApiController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/list-by-maker")
+    public List<ProductMakerStockDto> listByMaker() {
+        return productService.findProductMakerStockList();
     }
 }
