@@ -54,9 +54,9 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>取引先</th>
+                    <th>商品ID</th>
                     <th>商品名</th>
+                    <th>取引先名</th>
                     <th>在庫</th>
                     <th>単位</th>
                     <th>カテゴリ</th>
@@ -65,15 +65,15 @@
             </thead>
 
             <tbody>
-                <tr v-for="p in products" :key="p.id">
-                    <td>{{ p.id }}</td>
+                <tr v-for="p in products" :key="p.productId + '-' + p.makerName">
+                    <td>{{ p.productId }}</td>
+                    <td>{{ p.productName }}</td>
                     <td>{{ p.makerName }}</td>
-                    <td>{{ p.name }}</td>
-                    <td>{{ p.stock }}</td>
+                    <td>{{ p.quantity }}</td>
                     <td>{{ p.unit }}</td>
                     <td>{{ p.category }}</td>
                     <td>
-                        <button @click="deleteProduct(p.id)" class="btn btn-danger btn-sm">削除</button>
+                        <button @click="deleteDetail(p.stockDetailId)" class="btn btn-danger btn-sm">削除</button>
                     </td>
                 </tr>
             </tbody>

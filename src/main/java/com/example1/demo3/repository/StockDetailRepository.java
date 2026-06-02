@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example1.demo3.dto.ProductDto;
+import com.example1.demo3.dto.StockDetailByMakerDto;
 import com.example1.demo3.entity.StockDetail;
 
 public interface StockDetailRepository extends JpaRepository<StockDetail, Integer> {
@@ -23,19 +24,18 @@ public interface StockDetailRepository extends JpaRepository<StockDetail, Intege
     void clearProductId(Integer id);
 
     @Query("""
-                SELECT new com.example1.demo3.dto.ProductDto(
-                    p.id,
-                    p.name,
-                    p.category,
-                    p.unit,
-                    sd.quantity,
-                    m.name
-                )
-                FROM StockDetail sd
-                JOIN sd.product p
-                JOIN sd.maker m
-                ORDER BY p.id, m.id
-            """)
-    List<ProductDto> findAllForList();
+        SELECT new com.example1.demo3.dto.StockDetailByMakerDto(
+            m.name,
+            sd.quantity
+        )
+        FROM StockDetail sd
+        JOIN sd.maker m
+        WHERE sd.product.id = :productId
+        ORDER BY m.name
+    """)
+    List<StockDetailByMakerDto> findDetailByProductId(Integer productId);
+
+    @Query("SELECT SUM(sd.quantity) FROM StockDetail sd WHERE sd.product.id = :productId")
+    Integer sumQuantityByProductId(Integer productId);
 
 }

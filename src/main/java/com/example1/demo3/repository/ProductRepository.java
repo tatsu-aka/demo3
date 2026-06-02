@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example1.demo3.dto.ProductDto;
+import com.example1.demo3.dto.ProductMakerStockDto;
 import com.example1.demo3.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
@@ -14,19 +15,20 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> findByCategory(String category);
 
     @Query("""
-                SELECT new com.example1.demo3.dto.ProductDto(
+                SELECT new com.example1.demo3.dto.ProductMakerStockDto(
+                    sd.id,
                     p.id,
                     p.name,
-                    p.category,
+                    m.name,
+                    sd.quantity,
                     p.unit,
-                    p.stock,
-                    m.name
+                    p.category
                 )
-                FROM StockDetail sd
-                JOIN sd.product p
-                JOIN sd.maker m
-                ORDER BY p.id, m.id
+                FROM Product p
+                JOIN StockDetail sd ON sd.product.id = p.id
+                JOIN Maker m ON m.id = sd.maker.id
+                ORDER BY p.id, m.name
             """)
-    List<ProductDto> findAllWithMakerFromStockDetail();
+    List<ProductMakerStockDto> findProductMakerStockList();
 
 }

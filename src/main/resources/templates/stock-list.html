@@ -65,11 +65,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="s in stocks" :key="s.productName">
+                <tr v-for="s in stocks" :key="s.productId">
                     <td>{{ s.productName }}</td>
-                    <td>{{ s.stock }}</td>
+                    <td>{{ s.quantity }}</td>
                     <td>
-                        <button @click="showDetail(s.productName)">内訳</button>
+                        <button @click="showDetail(s.productId)">内訳</button>
                     </td>
                 </tr>
             </tbody>
@@ -93,9 +93,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="d in detail" :key="d.maker">
-                            <td>{{ d.maker }}</td>
-                            <td>{{ d.stock }}</td>
+                        <tr v-for="d in detail" :key="d.makerName">
+                            <td>{{ d.makerName }}</td>
+                            <td>{{ d.quantity }}</td>
                         </tr>
                     </tbody>
                 </table>

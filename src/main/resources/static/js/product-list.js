@@ -5,18 +5,19 @@ const app = Vue.createApp({
         };
     },
     mounted() {
-        axios.get('/api/products')
+        axios.get('/api/products/list-by-maker')
         .then(res => { this.products = res.data; });
     },
     methods: {
         
-        async deleteProduct(id) {
+        async deleteDetail(id) {
             if (!confirm("本当に削除しますか？")) return;
 
             try {
-                await axios.delete(`/api/products/${id}`);
+                await axios.delete(`/api/stock-detail/${id}`);
                 alert("削除しました");
-                this.products = this.products.filter(p => p.id !== id);
+                const res = await axios.get('/api/products/list-by-maker');
+                this.products = res.data;
             } catch (error) {
                 if (error.response && error.response.status === 404) {
                     alert("商品が見つかりません（404）");
