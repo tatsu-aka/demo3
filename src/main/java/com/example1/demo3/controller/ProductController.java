@@ -19,16 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final MakerService makerService;
-    private final StockInService stockInService;
-    private final StockOutService stockOutService;
+    
 
-    public ProductController(ProductService productService, MakerService makerService, StockInService stockInService,
-        StockOutService stockOutService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.makerService = makerService;
-        this.stockInService = stockInService;
-        this.stockOutService = stockOutService;
+        
     }
 
     // 商品一覧 + 検索
@@ -71,13 +66,6 @@ public class ProductController {
         return "redirect:/product";
     }
 
-    // 削除
-    @GetMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Integer id) {
-        productService.deleteById(id);
-        return "redirect:/product";
-    }
-
     //商品一覧API
     @GetMapping("/api/products")
     @ResponseBody
@@ -86,27 +74,5 @@ public class ProductController {
             p.getId(), p.getName(), p.getCategory(), p.getUnit(), p.getStock(), p.getMaker() != null ? p.getMaker().getName() : null)).toList();
     }
 
-    // 出庫フォーム
-    @GetMapping("/out-form")
-    public String showOutForm(Model model) {
-        model.addAttribute("products", productService.findAll());
-
-        //カテゴリと単位のリスト
-        model.addAttribute("categories", List.of("野菜", "果物"));
-        model.addAttribute("units", List.of("個", "P", "ケース", "kg"));
-        model.addAttribute("makers", makerService.findAll());
-        return "product-out";
-    }
-
-    // 入庫フォーム
-    @GetMapping("/in")
-    public String showInForm(Model model) {
-        model.addAttribute("products", productService.findAll());
-        model.addAttribute("makers", makerService.findAll());
-
-        //カテゴリと単位のリスト
-        model.addAttribute("categories", List.of("野菜", "果物"));
-        model.addAttribute("units", List.of("個", "P", "ケース", "kg"));
-        return "product-in";
-    }
+    
 }
