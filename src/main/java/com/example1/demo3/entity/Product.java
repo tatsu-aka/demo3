@@ -23,11 +23,11 @@ public class Product {
     @Column(nullable = false)
     private String category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "maker_id")
     private Maker maker;
 
-    @Column(name = "cost_price", nullable = false)
+    @Column(name = "cost_price", nullable = true)
     private Integer costPrice;
 
     @Column(name = "sale_price", nullable = true)

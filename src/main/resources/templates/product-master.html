@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>商品マスタ管理</title>
+
+    <!-- Bootstrap（必要なら） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- Vue & Axios -->
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="p-4">
+
+    <div id="app" class="container">
+
+        <h2 class="mb-4">商品マスタ管理</h2>
+
+        <!-- 一覧 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>商品名</th>
+                    <th>カテゴリ</th>
+                    <th>単位</th>
+                    <th>メーカー</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr v-for="p in products" :key="p.id">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.category }}</td>
+                    <td>{{ p.unit }}</td>
+                    <td>{{ p.maker ? p.maker.name : '' }}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @click="edit(p)">編集</button>
+                        <button class="btn btn-danger btn-sm" @click="remove(p.id)">削除</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <!-- フォーム -->
+        <h4 class="mb-3">{{ form.id ? '商品編集' : '新規商品登録' }}</h4>
+
+        <div class="mb-3">
+            <label class="form-label">商品名</label>
+            <input type="text" class="form-control" v-model="form.name">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">カテゴリ</label>
+            <select class="form-select" v-model="form.category">
+                <option v-for="c in categories" :value="c">{{ c }}</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">単位</label>
+            <select class="form-select" v-model="form.unit">
+                <option v-for="u in units" :value="u">{{ u }}</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">メーカー</label>
+            <select class="form-select" v-model="form.makerId">
+                <option v-for="m in makers" :value="m.id">{{ m.name }}</option>
+            </select>
+        </div>
+
+        <button class="btn btn-success" @click="save">保存</button>
+        <button class="btn btn-secondary ms-2" @click="resetForm">クリア</button>
+
+    </div>
+
+    <!-- Vue ロジック -->
+    <script src="/js/product-master.js"></script>
+
+</body>
+</html>

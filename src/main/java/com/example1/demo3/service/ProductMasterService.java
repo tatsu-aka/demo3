@@ -28,23 +28,30 @@ public class ProductMasterService {
     public Product findById(Integer id) {
         return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("商品が見つかりません"));
     }
+
     // 商品保存（新規・更新）
-    public void save(Product product) {
+    public Product save(Product product) {
+
+        if (product.getId() != null) {
+            Product existing = productRepository.findById(product.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません"));
+            product.setCreatedAt(existing.getCreatedAt());
+        }
 
         // Maker（取引先）を ID から取得してセット
         if (product.getMaker() != null && product.getMaker().getId() != null) {
-            Maker maker = makerRepository.findById(product.getMaker().getId()).orElseThrow(() -> new IllegalArgumentException("取引先が見つかりません"));
+            Maker maker = makerRepository.findById(product.getMaker().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("取引先が見つかりません"));
             product.setMaker(maker);
         }
 
         // Unit は文字列なのでそのまま
-        productRepository.save(product);
+        return productRepository.save(product);
     }
 
     // 商品削除
     public void delete(Integer id) {
         productRepository.deleteById(id);
     }
-
 
 }

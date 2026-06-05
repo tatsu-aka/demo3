@@ -163,19 +163,15 @@ Dockerを使用してバックエンド・フロントエンド・データベ�
 本アプリはSpring bootによるREST APIを使用しています。
 
 ---
-## 商品API
-### GET /api/products
-商品一覧を取得します。
+## 在庫一覧API
+### GET /api/products  
+商品一覧の取得。  
 
-### POST /api/products
-商品を新規登録します。
+### GET /api/products/list-by-maker
+メーカー別の在庫の取得。
 
-### PUT /api/products/{id}
-商品情報を更新します。
-
-### DELETE API　未実装
-削除処理のみControllerからの実装となっておりAPI化は未対応です。
-※今後の拡張としてDELETE APIを追加します。
+### DELETE API　/api/stock-detail/{id}
+入出庫履歴を削除し、在庫を再計算する。
 
 ## 価格API
 
@@ -183,36 +179,17 @@ Dockerを使用してバックエンド・フロントエンド・データベ�
 商品価格の変更（価格履歴を自動で保存）
 
 ### GET /api/products/{id}/price-history
-過去の価格履歴を取得
-
-### 価格変更履歴の削除　API　未実装
-
-## 在庫API
-### GET /api/stock/summary
-在庫サマリー一覧（商品ごとの在庫数・入庫数・出庫数）
-
-### GET /api/stock-history/{productId}
-商品ごとの在庫推移（グラフ用）
+過去の価格履歴を取得  
 
 ### POST /api/stock/in
 入庫処理
 
 ### POST /api/stock/out
-出庫処理（在庫不足時はエラー）
+出庫処理（在庫不足時はエラー）  
 
-### 在庫履歴削除　API　未実装
-
-## 在庫内訳API
-
-### GET /api/stock/summary/maker/{productName}
-指定した商品名の取引先別在庫内訳を取得
-
-## 履歴  API
-### GET /api/stock-history/in
-入庫履歴の取得
-
-### GET /api/stock-history/out
-出庫履歴の取得
+## 内訳API  
+### GET /api/stock-detail/{productId}  
+商品別在庫の内訳表示。
 
 ## マスタ  API
 ### GET /api/master/categories
@@ -251,7 +228,7 @@ Spring Security が内部で自動的に行います。
 - MAKERS：メーカー情報
 - PRODUCT_PRICE：価格変更履歴
 - STOCK_HISTORY：入出庫履歴（IN/OUT）
-- STOCK_DETAIL：在庫内訳（画面遷移で表示）
+- STOCK_DETAIL：在庫内訳
 - USER：ログインユーザー情報（Spring Security）
 
 ```mermaid
