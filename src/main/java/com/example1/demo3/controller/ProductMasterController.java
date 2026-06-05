@@ -28,16 +28,15 @@ public class ProductMasterController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("products", productMasterService.findAll());
-        return "product-master-list";
+    public String productMasterPage() {
+        return "product-master";
     }
 
     @GetMapping("/new")
     public String newProduct(Model model) {
         model.addAttribute("product", new Product());
         model.addAttribute("makers", makerRepository.findAll());
-        return "product-master-form";
+        return "product-master";
     }
     @PostMapping("/save")
     public String save(@ModelAttribute Product product) {
