@@ -191,7 +191,15 @@ Dockerを使用してバックエンド・フロントエンド・データベ�
 ### GET /api/stock-detail/{productId}  
 商品別在庫の内訳表示。
 
-## マスタ  API
+## 商品マスタ  API  
+### GET /api/products/master  
+登録されている商品マスタの一覧  
+### POST /api/products/master  
+新規登録をするAPI  
+### PUT /api/products/master/{id}  
+更新をするAPI  
+### DELETE /api/products/master/{id}  
+指定された商品マスタを削除
 ### GET /api/master/categories
 カテゴリを取得するAPI（固定値）
 
@@ -350,8 +358,6 @@ graph LR
   どのAPIを誰が使えるべきか整理し、Spring Securityの設定でアクセス制限をかけました。
 
 # 今後の改善点
-- DELETE APIの実装（商品・価格履歴・在庫履歴）
-  現在はController側でのみ削除処理を行っているため、REST APIとして実装し、フロントからも削除操作ができるように改善したい。
 - 在庫推移グラフの拡張機能（期間フィルタ・月次集計）
   現状全履歴を表示しているため「期間指定」「年次・月次・週次の集計」「メーカー別比較」などより実務的な分析ができる機能を追加したい。
 - 価格変更履歴の編集・削除機能
