@@ -67,7 +67,7 @@
             <tbody>
                 <tr v-for="s in stocks" :key="s.productId">
                     <td>{{ s.productName }}</td>
-                    <td>{{ s.quantity }}</td>
+                    <td>{{ s.totalStock }}</td>
                     <td>
                         <button @click="showDetail(s.productId)">内訳</button>
                     </td>

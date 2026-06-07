@@ -16,7 +16,22 @@ const app = Vue.createApp({
         loadStocks() {
             axios.get("/api/products/list-by-maker")
                 .then(res => {
-                    this.stocks = res.data;
+                    const list = res.data;
+                    const grouped = {};
+
+                    for (const item of list) {
+                        const id = item.productId;
+
+                        if (!grouped[id]) {
+                            grouped[id] = {
+                                productId: id,
+                                productName: item.productName,
+                                totalStock: 0
+                            };
+                        }
+                        grouped[id].totalStock += item.quantity;
+                    }
+                    this.stocks = Object.values(grouped);
                 })
                 .catch(err => console.error(err));
         },
