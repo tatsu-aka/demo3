@@ -166,7 +166,7 @@
                 };
             },
             mounted() {
-                axios.get("/api/products").then(res => this.products = res.data);
+                axios.get("/api/products/master").then(res => this.products = res.data);
                 axios.get("/api/master/categories").then(res => this.categories = res.data);
                 axios.get("/api/master/units").then(res => this.units = res.data);
                 axios.get("/api/makers").then(res => this.makers = res.data);
