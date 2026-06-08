@@ -47,12 +47,12 @@
             <select v-model="selectedProductId" @change="loadHistory">
                 <option value="">選択してください</option>
                 <option v-for="p in products" :value="p.id" :key="p.id">
-                    {{ p.name }} ({{ p.makerName}})
+                    {{ p.name }}
                 </option>
             </select>
 
             <div v-if="selectedProductId && history.length > 0">
-                <h3>{{ productName }} ({{ makerName }}) の価格変更履歴</h3>
+                <h3>{{ productName }}の価格変更履歴</h3>
 
                 <table>
                     <tr>
