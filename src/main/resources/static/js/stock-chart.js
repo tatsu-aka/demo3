@@ -16,7 +16,7 @@ const app = Vue.createApp({
     methods: {
         //商品一覧取得
         async loadProducts() {
-            const res = await fetch("/api/products");
+            const res = await fetch("/api/products/master");
             this.products = await res.json();
              
         },
