@@ -16,7 +16,7 @@ const app = Vue.createApp({
     methods: {
         async loadProducts() {
             try {
-                const res = await axios.get("/api/products");
+                const res = await axios.get("/api/products/master");
                 this.products = res.data;
             } catch (e) {
                 console.error(e);

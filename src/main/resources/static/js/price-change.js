@@ -12,7 +12,7 @@ const app = {
 
     mounted() {
         // 商品一覧を取得
-        axios.get("/api/products")
+        axios.get("/api/products/master")
             .then(res => {
                 this.products = res.data;
             })
