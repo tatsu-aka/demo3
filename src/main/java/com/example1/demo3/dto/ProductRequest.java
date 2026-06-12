@@ -28,4 +28,11 @@ public class ProductRequest {
     public String getUnit() { return unit; }
     public Integer getCostPrice() { return costPrice; }
     public Integer getMakerId() { return makerId; }
+
+    //setter
+    public void setName(String name) { this.name = name; }
+    public void setCategory(String category) { this.category = category; }
+    public void setUnit(String unit) { this.unit = unit; }
+    public void setCostPrice(Integer costPrice) { this.costPrice = costPrice; }
+    public void setMakerId(Integer makerId) { this.makerId = makerId; }
 }
