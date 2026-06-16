@@ -1,4 +1,4 @@
-package com.example1.demo3.service;
+package com.example1.demo3.unit.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,6 +19,7 @@ import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.StockDetail;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockDetailRepository;
+import com.example1.demo3.service.StockDetailService;
 
 @ExtendWith(MockitoExtension.class)
 public class StockDetailServiceTest {

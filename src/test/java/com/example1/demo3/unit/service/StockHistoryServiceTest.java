@@ -1,4 +1,4 @@
-package com.example1.demo3.service;
+package com.example1.demo3.unit.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -18,6 +18,7 @@ import com.example1.demo3.dto.StockHistoryInDto;
 import com.example1.demo3.dto.StockHistoryOutDto;
 import com.example1.demo3.entity.StockHistory;
 import com.example1.demo3.repository.StockHistoryRepository;
+import com.example1.demo3.service.StockHistoryService;
 
 @ExtendWith(MockitoExtension.class)
 public class StockHistoryServiceTest {

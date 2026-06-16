@@ -1,4 +1,4 @@
-package com.example1.demo3.service;
+package com.example1.demo3.integration.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,10 +16,11 @@ import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.ProductPrice;
 import com.example1.demo3.repository.ProductPriceRepository;
 import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.service.ProductPriceService;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ProductPriceServiceTest {
+public class ProductPriceServiceIntegrationTest {
     
     @Autowired
     ProductPriceService priceService;
