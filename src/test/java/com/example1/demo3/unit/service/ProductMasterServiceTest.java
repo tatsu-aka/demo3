@@ -1,4 +1,4 @@
-package com.example1.demo3.service;
+package com.example1.demo3.unit.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -18,6 +18,7 @@ import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.service.ProductMasterService;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductMasterServiceTest {
