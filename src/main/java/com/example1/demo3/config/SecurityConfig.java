@@ -1,8 +1,5 @@
 package com.example1.demo3.config;
 
-import java.security.Security;
-
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
