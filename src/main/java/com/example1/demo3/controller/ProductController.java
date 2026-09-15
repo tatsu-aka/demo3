@@ -2,10 +2,7 @@ package com.example1.demo3.controller;
 
 import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.entity.Product;
-import com.example1.demo3.service.MakerService;
 import com.example1.demo3.service.ProductService;
-import com.example1.demo3.service.StockInService;
-import com.example1.demo3.service.StockOutService;
 
 import java.util.List;
 
