@@ -21,7 +21,7 @@ public class StockHistoryInApiController {
     }
 
     @GetMapping("/{productId}")
-    public List<StockHistoryInDto> getInHistory(@PathVariable Long productId) {
+    public List<StockHistoryInDto> getInHistory(@PathVariable Integer productId) {
         return service.getInHistory(productId);
     }
 }

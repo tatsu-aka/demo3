@@ -18,6 +18,8 @@ import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
+import com.example1.demo3.repository.StockDetailRepository;
+import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.service.ProductMasterService;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +30,12 @@ public class ProductMasterServiceTest {
 
     @Mock
     private MakerRepository makerRepository;
+
+    @Mock
+    private StockDetailRepository stockDetailRepository;
+
+    @Mock
+    private StockHistoryRepository stockHistoryRepository;
 
     @InjectMocks
     private ProductMasterService productMasterService;
@@ -107,10 +115,15 @@ public class ProductMasterServiceTest {
     //削除
     @Test
     void delete_shouldCallRepositoryDeleteById() {
+        when(productRepository.findById(1)).thenReturn(Optional.of(new Product()));
+
         //実行
         productMasterService.delete(1);
 
         //検証
+        verify(stockDetailRepository).deleteByProductId(1);
+        verify(stockHistoryRepository).snapshotProductName(1);
+        verify(stockHistoryRepository).clearProductId(1);
         verify(productRepository).deleteById(1);
     }
 

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -115,6 +116,25 @@ public class StockOutServiceTest {
         when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
+    }
+
+    @Test
+    void outStock_shouldThrowExceptionWhenMakerStockIsNotEnough() {
+        Product product = new Product();
+        product.setId(1);
+        product.setStock(10);
+
+        StockDetail detail = new StockDetail();
+        detail.setQuantity(2);
+
+        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.of(detail));
+
+        assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
+
+        verify(productRepository, never()).save(product);
+        verify(stockDetailRepository, never()).save(detail);
+        verify(stockHistoryRepository, never()).save(any(StockHistory.class));
     }
 
     //異常系　メーカーが見つからない

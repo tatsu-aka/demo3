@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example1.demo3.entity.Maker;
+import com.example1.demo3.exception.ResourceNotFoundException;
 import com.example1.demo3.repository.MakerRepository;
 
 @Service
@@ -22,7 +23,7 @@ public class MakerService {
 
     public Maker findById(Integer id) {
         return makerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("取引先が見つかりません"));
+            .orElseThrow(() -> new ResourceNotFoundException("取引先が見つかりません"));
     }
 
     public void save(Maker maker) {

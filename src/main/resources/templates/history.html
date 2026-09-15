@@ -84,7 +84,7 @@
             </tr>
             <tr th:each="h : ${inHistory}">
                 <td th:text="${h.id}"></td>
-                <td th:text="${h.product.name}"></td>
+                <td th:text="${h.productName != null ? h.productName : h.product.name}"></td>
                 <td th:text="${h.quantity}"></td>
                 <td th:text="${#temporals.format(h.dateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
             </tr>
@@ -103,7 +103,7 @@
             </tr>
             <tr th:each="h : ${outHistory}">
                 <td th:text="${h.id}"></td>
-                <td th:text="${h.product.name}"></td>
+                <td th:text="${h.productName != null ? h.productName : h.product.name}"></td>
                 <td th:text="${h.quantity}"></td>
                 <td th:text="${#temporals.format(h.dateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
             </tr>
