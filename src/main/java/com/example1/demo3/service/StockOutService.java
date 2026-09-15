@@ -7,6 +7,7 @@ import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.StockDetail;
 import com.example1.demo3.entity.StockHistory;
+import com.example1.demo3.exception.ResourceNotFoundException;
 import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockDetailRepository;
@@ -31,12 +32,21 @@ public class StockOutService {
     @Transactional
     public void outStock(Integer productId, Integer quantity, String unit, String category, Integer makerId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません"));
+            .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
 
         // 在庫不足チェック
         if (product.getStock() < quantity) {
             throw new IllegalArgumentException("在庫が不足しています");
         }
+
+        StockDetail detail = stockDetailRepository.findByProductIdAndMakerId(productId, makerId)
+            .orElseThrow(() -> new ResourceNotFoundException("内訳が見つかりません"));
+        if (detail.getQuantity() < quantity) {
+            throw new IllegalArgumentException("取引先別の在庫が不足しています");
+        }
+
+        Maker maker = makerRepository.findById(makerId)
+            .orElseThrow(() -> new ResourceNotFoundException("取引先が見つかりません"));
 
         // 在庫更新
         int afterStock = product.getStock() - quantity;
@@ -44,18 +54,14 @@ public class StockOutService {
         productRepository.save(product);
 
         // 内訳の更新
-        StockDetail detail = stockDetailRepository.findByProductIdAndMakerId(productId, makerId)
-                .orElseThrow(() -> new IllegalArgumentException("内訳が見つかりません"));
-
         int afterDetailStock = detail.getQuantity() - quantity;
         detail.setQuantity(afterDetailStock);
         stockDetailRepository.save(detail);
 
         // 履歴保存
-        Maker maker = makerRepository.findById(makerId).orElseThrow(() -> new IllegalArgumentException("取引先が見つかりません"));
-
         StockHistory history = new StockHistory();
         history.setProduct(product);
+        history.setProductName(product.getName());
         history.setQuantity(quantity);
         history.setType("OUT");
         history.setUnit(unit);

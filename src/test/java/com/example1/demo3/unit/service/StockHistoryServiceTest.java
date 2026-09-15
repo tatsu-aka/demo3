@@ -122,11 +122,11 @@ public class StockHistoryServiceTest {
         h1.setDateTime(LocalDateTime.of(2024, 1, 1, 10, 0));
         h1.setQuantity(5);
 
-        when(stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(1L, "IN"))
+        when(stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(1, "IN"))
                 .thenReturn(Arrays.asList(h1));
 
         //実行
-        List<StockHistoryInDto> result = stockHistoryService.getInHistory(1L);
+        List<StockHistoryInDto> result = stockHistoryService.getInHistory(1);
 
         //検証
         assertEquals(5, result.get(0).getQuantity());
@@ -141,11 +141,11 @@ public class StockHistoryServiceTest {
         h1.setDateTime(LocalDateTime.of(2024, 1, 1, 10, 0));
         h1.setQuantity(3);
 
-        when(stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(1L, "OUT"))
+        when(stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(1, "OUT"))
                 .thenReturn(Arrays.asList(h1));
 
         //実行
-        List<StockHistoryOutDto> result = stockHistoryService.getOutHistory(1L);
+        List<StockHistoryOutDto> result = stockHistoryService.getOutHistory(1);
 
         //検証
         assertEquals(3, result.get(0).getQuantity());

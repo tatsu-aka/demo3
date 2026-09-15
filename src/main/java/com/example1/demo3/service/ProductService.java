@@ -44,13 +44,13 @@ public class ProductService {
     // 商品削除
     @Transactional
     public void deleteById(Integer id) {
-        stockHistoryRepository.deleteByProductId(id);
-        productRepository.deleteById(id);
+        deleteProduct(id);
     }
 
     // 商品取得
     public Product findById(Integer id) {
-        return productRepository.findById(id).orElseThrow();
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
     }
 
     // キーワード検索
@@ -71,7 +71,8 @@ public class ProductService {
 
     //更新（API)
     public void update(Integer id, ProductRequest req) {
-        Product p = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product p = productRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
         applyRequestToEntity(req, p);
         productRepository.save(p);
     }
@@ -83,15 +84,17 @@ public class ProductService {
         p.setUnit(req.getUnit());
         p.setCostPrice(req.getCostPrice());
 
-        Maker maker = makerRepository.findById(req.getMakerId()).orElseThrow(() -> new RuntimeException("Maker not found"));
+        Maker maker = makerRepository.findById(req.getMakerId())
+            .orElseThrow(() -> new ResourceNotFoundException("取引先が見つかりません"));
         p.setMaker(maker);
     }
 
     //商品削除
     @Transactional
     public void deleteProduct(Integer id) {
-        stockDetailRepository.clearProductId(id);
+        stockDetailRepository.deleteByProductId(id);
 
+        stockHistoryRepository.snapshotProductName(id);
         stockHistoryRepository.clearProductId(id);
 
         productRepository.findById(id)

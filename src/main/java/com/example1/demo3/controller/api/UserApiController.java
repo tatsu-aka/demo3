@@ -1,5 +1,6 @@
 package com.example1.demo3.controller.api;
 
+import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,8 @@ import com.example1.demo3.repository.UserRepository;
 @RestController
 @RequestMapping("/api/users")
 public class UserApiController {
+    private static final Set<String> ALLOWED_ROLES = Set.of("ADMIN", "USER");
+
     
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -30,11 +33,14 @@ public class UserApiController {
         if (userRepository.findByUsername(req.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("ユーザー名が既に存在しています");
         }
+        if (!ALLOWED_ROLES.contains(req.getRole())) {
+            return ResponseEntity.badRequest().body("無効な権限です");
+        }
 
         User user = new User();
         user.setUsername(req.getUsername());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
-        user.setRole("ROLE_" + req.getRole());
+        user.setRole(req.getRole());
 
         userRepository.save(user);
 

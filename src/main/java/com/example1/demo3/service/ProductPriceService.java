@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example1.demo3.dto.ProductPriceDto;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.ProductPrice;
+import com.example1.demo3.exception.ResourceNotFoundException;
 import com.example1.demo3.repository.ProductPriceRepository;
 import com.example1.demo3.repository.ProductRepository;
 
@@ -37,7 +38,8 @@ public class ProductPriceService {
         }
 
         //新しい価格追加
-        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("商品がみつかりません"));
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException("商品がみつかりません"));
 
         ProductPrice newPrice = new ProductPrice();
         newPrice.setProduct(product);

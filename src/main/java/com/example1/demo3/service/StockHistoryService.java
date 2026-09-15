@@ -73,12 +73,12 @@ public class StockHistoryService {
         .map(h -> new StockHistoryDto(h.getDateTime(), h.getStock())).toList();
     }
     //入庫グラフ用
-    public List<StockHistoryInDto> getInHistory(Long productId) {
+    public List<StockHistoryInDto> getInHistory(Integer productId) {
         return stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(productId, "IN").stream()
         .map(h -> new StockHistoryInDto(h.getDateTime(), h.getQuantity())).toList();
     }
     //出庫グラフ用
-    public List<StockHistoryOutDto> getOutHistory(Long productId) {
+    public List<StockHistoryOutDto> getOutHistory(Integer productId) {
         return stockHistoryRepository.findByProductIdAndTypeOrderByDateTimeAsc(productId, "OUT").stream()
         .map(h -> new StockHistoryOutDto(h.getDateTime(), h.getQuantity())).toList();
     }

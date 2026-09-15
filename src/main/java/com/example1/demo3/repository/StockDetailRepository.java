@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example1.demo3.dto.StockDetailByMakerDto;
@@ -17,10 +16,6 @@ public interface StockDetailRepository extends JpaRepository<StockDetail, Intege
     List<StockDetail> findByProductId(Integer productId);
 
     void deleteByProductId(Integer productId);
-
-    @Modifying
-    @Query("UPDATE StockDetail sd SET sd.product = NULL WHERE sd.product.id = :id")
-    void clearProductId(Integer id);
 
     @Query("""
         SELECT new com.example1.demo3.dto.StockDetailByMakerDto(

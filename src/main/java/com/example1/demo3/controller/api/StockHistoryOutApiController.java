@@ -20,7 +20,7 @@ public class StockHistoryOutApiController {
         this.service = service;
     }
     @GetMapping("/{productId}")
-    public List<StockHistoryOutDto> getOutHistory(@PathVariable Long productId) {
+    public List<StockHistoryOutDto> getOutHistory(@PathVariable Integer productId) {
         return service.getOutHistory(productId);
     }
 }

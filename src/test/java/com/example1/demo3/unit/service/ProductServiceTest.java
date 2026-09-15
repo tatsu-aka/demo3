@@ -135,7 +135,8 @@ class ProductServiceTest {
         productService.deleteProduct(productId);
 
         //検証
-        verify(stockDetailRepository).clearProductId(productId);
+        verify(stockDetailRepository).deleteByProductId(productId);
+        verify(stockHistoryRepository).snapshotProductName(productId);
         verify(stockHistoryRepository).clearProductId(productId);
         verify(productRepository).findById(productId);
         verify(productRepository).deleteById(productId);

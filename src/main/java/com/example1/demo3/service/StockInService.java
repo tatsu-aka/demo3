@@ -6,6 +6,7 @@ import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.StockDetail;
 import com.example1.demo3.entity.StockHistory;
+import com.example1.demo3.exception.ResourceNotFoundException;
 import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockDetailRepository;
@@ -27,17 +28,13 @@ public class StockInService {
         this.makerRepository = makerRepository;
         this.stockDetailRepository = stockDetailRepository;
     }
-    // 商品取得
-    private Product findProduct(Integer id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません"));
-    }
-
     // 入庫処理
     @Transactional
     public void inStock(Integer productId, Integer quantity, Integer makerId, String unit, String category) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("商品が見つかりません"));
-        Maker maker = makerRepository.findById(makerId).orElseThrow(() -> new IllegalArgumentException("メーカーが見つかりません"));
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
+        Maker maker = makerRepository.findById(makerId)
+            .orElseThrow(() -> new ResourceNotFoundException("メーカーが見つかりません"));
 
         //在庫更新
         int afterStock = product.getStock() + quantity;
@@ -59,6 +56,7 @@ public class StockInService {
         //履歴保存
         StockHistory history = new StockHistory();
         history.setProduct(product);
+        history.setProductName(product.getName());
         history.setQuantity(quantity);
         history.setType("IN");
         history.setMaker(maker);

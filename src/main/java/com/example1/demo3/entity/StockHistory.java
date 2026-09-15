@@ -26,6 +26,9 @@ public class StockHistory {
     @JoinColumn(name = "product_id", nullable = true)
     private Product product;
 
+    @Column(name = "product_name")
+    private String productName;
+
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,6 +59,14 @@ public class StockHistory {
     }
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public Integer getQuantity() {
