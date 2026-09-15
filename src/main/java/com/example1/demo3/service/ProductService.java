@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.dto.ProductMakerStockDto;
 import com.example1.demo3.dto.ProductRequest;
 import com.example1.demo3.entity.Maker;
@@ -86,12 +85,6 @@ public class ProductService {
 
         Maker maker = makerRepository.findById(req.getMakerId()).orElseThrow(() -> new RuntimeException("Maker not found"));
         p.setMaker(maker);
-    }
-    
-    //出力用DTO
-    public List<ProductDto> findAllDto() {
-        return productRepository.findAll().stream().map(p -> new ProductDto(p.getId(), p.getName(), p.getCategory(),
-                p.getUnit(), p.getStock(), p.getMaker() != null ? p.getMaker().getName() : null)).toList();
     }
 
     //商品削除
