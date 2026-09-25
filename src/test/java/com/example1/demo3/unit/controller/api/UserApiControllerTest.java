@@ -1,4 +1,4 @@
-package com.example1.demo3.unit.controller;
+package com.example1.demo3.unit.controller.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.never;
