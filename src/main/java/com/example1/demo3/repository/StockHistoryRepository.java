@@ -37,24 +37,24 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
     // 在庫一覧集計用（商品合計）
     @Query("""
                 SELECT new com.example1.demo3.dto.StockSummaryDto(
-                    COALESCE(h.productName, h.product.name),
+                    COALESCE(h.productName, p.name),
                     SUM(CASE WHEN h.type = 'IN' THEN h.quantity ELSE -h.quantity END)
                 )
-                FROM StockHistory h
-                GROUP BY COALESCE(h.productName, h.product.name)
+                FROM StockHistory h LEFT JOIN h.product p
+                GROUP BY COALESCE(h.productName, p.name)
             """)
     List<StockSummaryDto> getStockSummary();
 
     // 在庫一覧集計用（取引先別）
     @Query("""
                 SELECT new com.example1.demo3.dto.StockByMakerDto(
-                    COALESCE(h.productName, h.product.name),
+                    COALESCE(h.productName, p.name),
                     h.maker.name,
                     SUM(CASE WHEN h.type = 'IN' THEN h.quantity ELSE -h.quantity END)
                 )
-                FROM StockHistory h
-                WHERE COALESCE(h.productName, h.product.name) = :productName
-                GROUP BY COALESCE(h.productName, h.product.name), h.maker.name
+                FROM StockHistory h LEFT JOIN h.product p
+                WHERE COALESCE(h.productName, p.name) = :productName
+                GROUP BY COALESCE(h.productName, p.name), h.maker.name
             """)
     List<StockByMakerDto> getStockByMaker(String productName);
 
