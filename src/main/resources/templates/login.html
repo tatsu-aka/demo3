@@ -59,7 +59,9 @@
         <!--Vueバリデーションエラー-->
         <p class="error" v-if="errorMessage">{{ errorMessage }}</p>
 
-        <form method="post" action="/login" @submit="validateForm">
+        <form method="post" th:action="@{/login}" @submit="validateForm">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
             <label>ユーザー名</label>
             <input type="text" name="username" v-model="username">
 

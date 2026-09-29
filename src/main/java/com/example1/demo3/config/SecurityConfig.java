@@ -22,9 +22,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())// 無効化
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/css/**", "/js/**").permitAll()// ログイン画面はok
-                        
+        http.authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/login",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/favicon.ico",
+                                "/error/**"
+                        ).permitAll()
+
                         //権限制御
                         .requestMatchers("/product/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/price/**").hasAnyRole("ADMIN")
