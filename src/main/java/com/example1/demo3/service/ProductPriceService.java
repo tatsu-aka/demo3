@@ -33,6 +33,9 @@ public class ProductPriceService {
 
         //現在の価格が存在する場合　end_dateを閉じる
         if (current != null) {
+            if (!startDate.isAfter(current.getStartDate())) {
+                throw new IllegalArgumentException("価格変更日は現在価格の開始日より後の日付を指定してください");
+            }
             current.setEndDate(startDate.minusDays(1));
             priceRepository.save(current);
         }
