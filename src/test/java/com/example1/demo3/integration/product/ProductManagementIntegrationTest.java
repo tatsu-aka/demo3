@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.User;
+import com.example1.demo3.entity.Maker;
+import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.UserRepository;
 
@@ -41,6 +43,9 @@ class ProductManagementIntegrationTest {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private MakerRepository makerRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -60,14 +65,35 @@ class ProductManagementIntegrationTest {
     }
 
     @Test
-    void admin_canCreateProduct_andItAppearsInMasterList() throws Exception {
+    void admin_canAccessLegacyProductRegistrationPage() throws Exception {
+        MockHttpSession session = loginAs("admin", "password", "ADMIN");
+
+        mockMvc.perform(get("/product/new").session(session))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void admin_cannotCreateProductWithoutMaker() throws Exception {
         MockHttpSession session = loginAs("admin", "password", "ADMIN");
 
         mockMvc.perform(post("/api/products/master")
                         .session(session)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Apple\",\"category\":\"果物\",\"unit\":\"個\",\"stock\":10,\"costPrice\":100}"))
+                        .content("{\"name\":\"Apple\",\"category\":\"果物\",\"unit\":\"個\",\"stock\":10,\"maker\":null}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void admin_canCreateProduct_andItAppearsInMasterList() throws Exception {
+        MockHttpSession session = loginAs("admin", "password", "ADMIN");
+        Maker maker = createMaker("メーカーA");
+
+        mockMvc.perform(post("/api/products/master")
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Apple\",\"category\":\"果物\",\"unit\":\"個\",\"stock\":10,\"costPrice\":100,\"maker\":{\"id\":" + maker.getId() + "}}"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Apple")));
 
@@ -78,12 +104,14 @@ class ProductManagementIntegrationTest {
 
     @Test
     void admin_canUpdateProductAndChangeValue() throws Exception {
+        Maker maker = createMaker("メーカーA");
         Product product = new Product();
         product.setName("Apple");
         product.setCategory("果物");
         product.setUnit("個");
         product.setStock(10);
         product.setCostPrice(100);
+        product.setMaker(maker);
         Product saved = productRepository.saveAndFlush(product);
 
         MockHttpSession session = loginAs("admin", "password", "ADMIN");
@@ -103,12 +131,14 @@ class ProductManagementIntegrationTest {
 
     @Test
     void admin_canDeleteProductAndItDisappears() throws Exception {
+        Maker maker = createMaker("メーカーA");
         Product product = new Product();
         product.setName("Apple");
         product.setCategory("果物");
         product.setUnit("個");
         product.setStock(10);
         product.setCostPrice(100);
+        product.setMaker(maker);
         Product saved = productRepository.saveAndFlush(product);
 
         MockHttpSession session = loginAs("admin", "password", "ADMIN");
@@ -150,5 +180,11 @@ class ProductManagementIntegrationTest {
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole(role);
         userRepository.saveAndFlush(user);
+    }
+
+    private Maker createMaker(String name) {
+        Maker maker = new Maker();
+        maker.setName(name);
+        return makerRepository.saveAndFlush(maker);
     }
 }

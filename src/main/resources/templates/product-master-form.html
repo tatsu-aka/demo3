@@ -20,7 +20,7 @@
 
     <div class="mb-2">
         <label>取引先</label>
-        <select th:field="*{maker.id}" class="form-select">
+        <select th:field="*{maker.id}" class="form-select" required>
             <option value="">選択してください</option>
             <option th:each="m : ${makers}" th:value="${m.id}" th:text="${m.name}"></option>
         </select>

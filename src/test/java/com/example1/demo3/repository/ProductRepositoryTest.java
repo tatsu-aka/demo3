@@ -96,6 +96,7 @@ class ProductRepositoryTest {
         product.setUnit("個");
         product.setCategory(category);
         product.setStock(0);
+        product.setMaker(createMaker(name + "メーカー"));
         return productRepository.save(product);
     }
 

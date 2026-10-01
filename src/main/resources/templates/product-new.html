@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品登録</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+<main class="container">
+    <h2>商品登録</h2>
+    <form th:action="@{/product/new}" method="post" th:object="${product}">
+        <div class="mb-3">
+            <label class="form-label" for="name">商品名</label>
+            <input id="name" type="text" th:field="*{name}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="maker">メーカー</label>
+            <select id="maker" th:field="*{maker.id}" class="form-select" required>
+                <option value="">選択してください</option>
+                <option th:each="maker : ${makers}" th:value="${maker.id}" th:text="${maker.name}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="category">カテゴリ</label>
+            <select id="category" th:field="*{category}" class="form-select" required>
+                <option value="">選択してください</option>
+                <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="unit">単位</label>
+            <input id="unit" type="text" th:field="*{unit}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="costPrice">原価</label>
+            <input id="costPrice" type="number" th:field="*{costPrice}" class="form-control" min="0">
+        </div>
+        <button type="submit" class="btn btn-primary">登録</button>
+        <a href="/product" class="btn btn-secondary">戻る</a>
+    </form>
+</main>
+</body>
+</html>

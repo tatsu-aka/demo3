@@ -1,6 +1,7 @@
 package com.example1.demo3.unit.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,6 +73,40 @@ class ProductServiceTest {
         assertEquals(100, saved.getCostPrice());
         assertEquals(0, saved.getStock());
         assertEquals(maker, saved.getMaker());
+    }
+
+    @Test
+    void save_shouldRejectProductWithoutMaker() {
+        Product product = new Product();
+
+        assertThrows(IllegalArgumentException.class, () -> productService.save(product));
+    }
+
+    @Test
+    void save_shouldPreserveExistingMakerWhenUpdateOmitsMaker() {
+        Product product = new Product();
+        product.setId(1);
+
+        Maker existingMaker = new Maker();
+        existingMaker.setId(10);
+        Product existing = new Product();
+        existing.setId(1);
+        existing.setName("レタス");
+        existing.setCategory("野菜");
+        existing.setUnit("個");
+        existing.setMaker(existingMaker);
+
+        Maker persistedMaker = new Maker();
+        persistedMaker.setId(10);
+        when(productRepository.findById(1)).thenReturn(Optional.of(existing));
+        when(makerRepository.findById(10)).thenReturn(Optional.of(persistedMaker));
+
+        productService.save(product);
+
+        assertEquals("野菜", product.getCategory());
+        assertEquals("個", product.getUnit());
+        assertEquals(persistedMaker, product.getMaker());
+        verify(productRepository).save(product);
     }
 
     @Test

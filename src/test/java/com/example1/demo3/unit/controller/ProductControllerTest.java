@@ -21,6 +21,7 @@ import com.example1.demo3.controller.ProductController;
 import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.entity.Maker;
 import com.example1.demo3.entity.Product;
+import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.service.ProductService;
 
 
@@ -30,6 +31,9 @@ public class ProductControllerTest {
     
     @Mock
     private ProductService productService;
+
+    @Mock
+    private MakerRepository makerRepository;
 
     @InjectMocks
     private ProductController productController;
@@ -60,6 +64,8 @@ public class ProductControllerTest {
     void showCreateForm_shouldReturnProductNewView() {
         //準備
         Model model = new ExtendedModelMap();
+        List<Maker> makers = List.of(new Maker());
+        when(makerRepository.findAll()).thenReturn(makers);
 
         //実行
         String viewName = productController.showCreateForm(model);
@@ -71,6 +77,7 @@ public class ProductControllerTest {
         assertNotNull(actualProduct);
         assertInstanceOf(Product.class, actualProduct);
         assertEquals(List.of("野菜", "果物"), model.getAttribute("categories"));
+        assertEquals(makers, model.getAttribute("makers"));
     }
 
     @Test
@@ -97,6 +104,7 @@ public class ProductControllerTest {
         Model model = new ExtendedModelMap();
 
         when(productService.findById(productId)).thenReturn(product);
+        when(makerRepository.findAll()).thenReturn(List.of());
 
         //実行
         String viewName = productController.editProduct(productId, model);
@@ -142,6 +150,9 @@ public class ProductControllerTest {
         productWithoutMaker.setCategory("果物");
         productWithoutMaker.setUnit("袋");
         productWithoutMaker.setStock(5);
+        Maker secondMaker = new Maker();
+        secondMaker.setName("果物メーカー");
+        productWithoutMaker.setMaker(secondMaker);
 
         when(productService.findAll()).thenReturn(List.of(productWithMaker, productWithoutMaker));
 
@@ -157,7 +168,7 @@ public class ProductControllerTest {
         assertEquals(10, result.get(0).getStock());
         assertEquals("青果メーカー", result.get(0).getMakerName());
         assertEquals(2, result.get(1).getId());
-        assertNull(result.get(1).getMakerName());
+        assertEquals("果物メーカー", result.get(1).getMakerName());
         verify(productService).findAll();
     }
 }

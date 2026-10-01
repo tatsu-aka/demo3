@@ -73,6 +73,7 @@
         <div class="mb-3">
             <label class="form-label">メーカー</label>
             <select class="form-select" v-model="form.makerId">
+                <option :value="null" disabled>選択してください</option>
                 <option v-for="m in makers" :value="m.id">{{ m.name }}</option>
             </select>
         </div>

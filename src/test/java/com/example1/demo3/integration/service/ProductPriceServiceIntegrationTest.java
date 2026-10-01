@@ -166,6 +166,11 @@ public class ProductPriceServiceIntegrationTest {
     }
 
     private Product createProduct(String name, Maker maker) {
+        if (maker == null) {
+            maker = new Maker();
+            maker.setName(name + "メーカー");
+            maker = makerRepository.save(maker);
+        }
         Product product = new Product();
         product.setName(name);
         product.setUnit("個");

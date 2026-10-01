@@ -2,6 +2,7 @@ package com.example1.demo3.controller;
 
 import com.example1.demo3.dto.ProductDto;
 import com.example1.demo3.entity.Product;
+import com.example1.demo3.repository.MakerRepository;
 import com.example1.demo3.service.ProductService;
 
 import java.util.List;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
+    private final MakerRepository makerRepository;
     
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, MakerRepository makerRepository) {
         this.productService = productService;
+        this.makerRepository = makerRepository;
         
     }
 
@@ -36,8 +39,8 @@ public class ProductController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("product", new Product());
-        //カテゴリ
         model.addAttribute("categories", List.of("野菜", "果物"));
+        model.addAttribute("makers", makerRepository.findAll());
         return "product-new";
     }
 
@@ -52,6 +55,7 @@ public class ProductController {
     @GetMapping("/edit/{id}")
     public String editProduct(@PathVariable Integer id, Model model) {
         model.addAttribute("product", productService.findById(id));
+        model.addAttribute("makers", makerRepository.findAll());
         return "product-edit";
     }
 

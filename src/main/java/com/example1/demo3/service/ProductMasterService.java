@@ -41,21 +41,25 @@ public class ProductMasterService {
 
     // 商品保存（新規・更新）
     public Product save(Product product) {
-
+        Product existing = null;
         if (product.getId() != null) {
-            Product existing = productRepository.findById(product.getId())
+            existing = productRepository.findById(product.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
             product.setCreatedAt(existing.getCreatedAt());
         }
 
-        // Maker（取引先）を ID から取得してセット
-        if (product.getMaker() != null && product.getMaker().getId() != null) {
-            Maker maker = makerRepository.findById(product.getMaker().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("取引先が見つかりません"));
-            product.setMaker(maker);
+        if (product.getMaker() == null && existing != null) {
+            product.setMaker(existing.getMaker());
         }
 
-        // Unit は文字列なのでそのまま
+        if (product.getMaker() == null || product.getMaker().getId() == null) {
+            throw new IllegalArgumentException("登録済みメーカーを指定してください");
+        }
+
+        Maker maker = makerRepository.findById(product.getMaker().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("取引先が見つかりません"));
+        product.setMaker(maker);
+
         return productRepository.save(product);
     }
 

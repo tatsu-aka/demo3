@@ -38,6 +38,23 @@ public class ProductService {
 
     // 商品保存（新規・更新どちらも対応）
     public void save(Product product) {
+        Product existing = null;
+        if (product.getId() != null) {
+            existing = productRepository.findById(product.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
+            if (product.getCategory() == null) product.setCategory(existing.getCategory());
+            if (product.getUnit() == null) product.setUnit(existing.getUnit());
+            if (product.getMaker() == null) product.setMaker(existing.getMaker());
+            product.setCreatedAt(existing.getCreatedAt());
+        }
+
+        if (product.getMaker() == null || product.getMaker().getId() == null) {
+            throw new IllegalArgumentException("登録済みメーカーを指定してください");
+        }
+
+        Maker maker = makerRepository.findById(product.getMaker().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("取引先が見つかりません"));
+        product.setMaker(maker);
         productRepository.save(product);
     }
 
@@ -79,6 +96,9 @@ public class ProductService {
 
     //Entityへ変換
     private void applyRequestToEntity(ProductRequest req, Product p) {
+        if (req.getMakerId() == null) {
+            throw new IllegalArgumentException("メーカーは必須です");
+        }
         p.setName(req.getName());
         p.setCategory(req.getCategory());
         p.setUnit(req.getUnit());
