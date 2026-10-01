@@ -2,6 +2,7 @@ package com.example1.demo3.controller.api;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class ProductMasterApiController {
     
     //新規登録
     @PostMapping
-    public Product create(@RequestBody Product product) { return productMasterService.save(product); }
+    public Product create(@Valid @RequestBody Product product) { return productMasterService.save(product); }
     
     //更新
     @PutMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.example1.demo3.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 
@@ -23,8 +24,9 @@ public class Product {
     @Column(nullable = false)
     private String category;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "maker_id")
+    @NotNull(message = "メーカーは必須です")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "maker_id", nullable = false)
     private Maker maker;
 
     @Column(name = "cost_price", nullable = true)

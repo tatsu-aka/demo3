@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.example1.demo3.entity.Product;
 import com.example1.demo3.entity.ProductPrice;
+import com.example1.demo3.entity.Maker;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -25,6 +26,9 @@ class ProductPriceRepositoryTest {
 
     @Autowired
     private ProductRepository productRepository;
+
+        @Autowired
+        private MakerRepository makerRepository;
 
     @Test
     // 現在の価格が取得できることを確認する
@@ -107,6 +111,9 @@ class ProductPriceRepositoryTest {
         product.setUnit("個");
         product.setCategory("食品");
         product.setStock(0);
+        Maker maker = new Maker();
+        maker.setName(name + "メーカー");
+        product.setMaker(makerRepository.save(maker));
         return productRepository.save(product);
     }
 

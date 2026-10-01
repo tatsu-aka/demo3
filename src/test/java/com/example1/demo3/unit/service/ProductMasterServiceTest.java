@@ -1,6 +1,7 @@
 package com.example1.demo3.unit.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,8 +101,14 @@ public class ProductMasterServiceTest {
         Product existing = new Product();
         existing.setId(1);
         existing.setCreatedAt(LocalDateTime.now());
+        Maker existingMaker = new Maker();
+        existingMaker.setId(20);
+        existing.setMaker(existingMaker);
+        Maker foundMaker = new Maker();
+        foundMaker.setId(20);
 
         when(productRepository.findById(1)).thenReturn(Optional.of(existing));
+        when(makerRepository.findById(20)).thenReturn(Optional.of(foundMaker));
         when(productRepository.save(product)).thenReturn(product);
 
         //実行
@@ -109,8 +116,17 @@ public class ProductMasterServiceTest {
 
         //検証
         assertEquals(existing.getCreatedAt(), result.getCreatedAt());
+        assertEquals(foundMaker, result.getMaker());
         verify(productRepository).findById(1);
+        verify(makerRepository).findById(20);
         verify(productRepository).save(product);
+    }
+
+    @Test
+    void save_shouldRejectNewProductWithoutMaker() {
+        Product product = new Product();
+
+        assertThrows(IllegalArgumentException.class, () -> productMasterService.save(product));
     }
     //削除
     @Test

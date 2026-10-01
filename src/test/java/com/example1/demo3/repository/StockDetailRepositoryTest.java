@@ -133,6 +133,7 @@ class StockDetailRepositoryTest {
         product.setUnit("個");
         product.setCategory("食品");
         product.setStock(0);
+        product.setMaker(createMaker(name + "メーカー"));
         return productRepository.save(product);
     }
 

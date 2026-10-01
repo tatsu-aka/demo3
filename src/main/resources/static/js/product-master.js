@@ -64,6 +64,11 @@ const app = Vue.createApp({
         // 保存（新規 or 更新）
         // -------------------------
         async save() {
+            if (!this.form.makerId) {
+                alert("メーカーを選択してください");
+                return;
+            }
+
             const payload = {
                 name: this.form.name,
                 category: this.form.category,
