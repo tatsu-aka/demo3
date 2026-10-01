@@ -23,8 +23,8 @@ public class Product {
     @Column(nullable = false)
     private String category;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "maker_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "maker_id", nullable = false)
     private Maker maker;
 
     @Column(name = "cost_price", nullable = true)

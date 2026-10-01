@@ -44,7 +44,7 @@ public class ProductPriceServiceIntegrationTest {
     @Test
     // 価格変更処理が正しく行われることを確認する
     void changePrice_closesCurrentPriceAndAddsNewPrice() {
-        Product product = createProduct("レタス", null);
+        Product product = createProduct("レタス", createMaker("メーカーA"));
         ProductPrice oldPrice = savePrice(product, 100,
                 LocalDate.of(2023, 1, 1), null);
         LocalDate newStartDate = LocalDate.of(2024, 1, 1);
@@ -70,7 +70,7 @@ public class ProductPriceServiceIntegrationTest {
     @Test
     // 現在の価格がない場合に新しい価格を追加することを確認する
     void changePrice_addsPriceWhenNoCurrentPriceExists() {
-        Product product = createProduct("トマト", null);
+        Product product = createProduct("トマト", createMaker("メーカーB"));
         LocalDate startDate = LocalDate.of(2025, 4, 1);
 
         priceService.changePrice(product.getId(), 300, startDate);
@@ -99,7 +99,7 @@ public class ProductPriceServiceIntegrationTest {
         @Test
         // 現在価格の開始日以前の日付で価格変更できないことを確認する
         void changePrice_throwsWhenStartDateIsNotAfterCurrentPriceStartDate() {
-        Product product = createProduct("キャベツ", null);
+        Product product = createProduct("キャベツ", createMaker("メーカーC"));
         LocalDate currentStartDate = LocalDate.of(2024, 2, 1);
         ProductPrice currentPrice = savePrice(product, 100, currentStartDate, null);
 
@@ -117,7 +117,7 @@ public class ProductPriceServiceIntegrationTest {
         @Test
         // 価格切り替え日の前日までは旧価格、当日から新価格になることを確認する
         void changePrice_switchesPriceAtStartDateBoundary() {
-        Product product = createProduct("白菜", null);
+        Product product = createProduct("白菜", createMaker("メーカーD"));
         LocalDate newStartDate = LocalDate.of(2024, 3, 1);
         savePrice(product, 100, newStartDate.minusMonths(1), null);
 
@@ -157,12 +157,25 @@ public class ProductPriceServiceIntegrationTest {
     @Test
     // 価格履歴がない商品の履歴取得で空リストを返すことを確認する
     void getHistory_returnsEmptyListWhenProductHasNoPriceHistory() {
-        Product product = createProduct("未登録商品", null);
+        Product product = createProduct("未登録商品", createMaker("メーカーE"));
 
         List<ProductPriceDto> history = priceService.getHistory(product.getId());
 
         assertNotNull(history);
         assertEquals(List.of(), history);
+    }
+
+    @Test
+    // メーカーなしの商品は保存できないことを確認する
+    void createProduct_throwsWhenMakerIsNull() {
+        Product product = new Product();
+        product.setName("メーカーなし商品");
+        product.setUnit("個");
+        product.setCategory("野菜");
+        product.setStock(0);
+        product.setMaker(null);
+
+        assertThrows(Exception.class, () -> productRepository.save(product));
     }
 
     private Product createProduct(String name, Maker maker) {
@@ -183,5 +196,11 @@ public class ProductPriceServiceIntegrationTest {
         price.setStartDate(startDate);
         price.setEndDate(endDate);
         return priceRepository.save(price);
+    }
+
+    private Maker createMaker(String name) {
+        Maker maker = new Maker();
+        maker.setName(name);
+        return makerRepository.save(maker);
     }
 }
