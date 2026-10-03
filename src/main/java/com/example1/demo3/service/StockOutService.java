@@ -31,7 +31,7 @@ public class StockOutService {
 
     @Transactional
     public void outStock(Integer productId, Integer quantity, String unit, String category, Integer makerId) {
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdForUpdate(productId)
             .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
 
         // 在庫不足チェック
@@ -39,7 +39,7 @@ public class StockOutService {
             throw new IllegalArgumentException("在庫が不足しています");
         }
 
-        StockDetail detail = stockDetailRepository.findByProductIdAndMakerId(productId, makerId)
+        StockDetail detail = stockDetailRepository.findByProductIdAndMakerIdForUpdate(productId, makerId)
             .orElseThrow(() -> new ResourceNotFoundException("内訳が見つかりません"));
         if (detail.getQuantity() < quantity) {
             throw new IllegalArgumentException("取引先別の在庫が不足しています");

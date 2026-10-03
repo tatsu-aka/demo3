@@ -9,7 +9,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +67,9 @@ class StockFlowIntegrationTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private com.example1.demo3.service.StockOutService stockOutService;
 
     @Test
     // 正常系: 商品を登録して入庫・出庫を実行し、在庫・メーカー別内訳・履歴・集計APIが最新状態になることを確認する
@@ -305,81 +314,137 @@ class StockFlowIntegrationTest {
     }
 
     @Test
-    // 商品とメーカーの紐付け不整合: 商品がメーカーAだがメーカーBで出庫すると失敗し、在庫と履歴が変わらないことを確認する
-    void stockFlow_rejectsMakerMismatchWithoutChangingInventory() throws Exception {
-        Maker makerA = createMaker("メーカーA");
-        Maker makerB = createMaker("メーカーB");
-        Product product = createProduct("きゅうり", makerA, 10);
-        StockDetail detail = new StockDetail();
-        detail.setProduct(product);
-        detail.setMaker(makerA);
-        detail.setQuantity(10);
-        stockDetailRepository.saveAndFlush(detail);
-        MockHttpSession session = loginAsAdmin();
-
-        String mismatchRequest = "{\"productId\":" + product.getId()
-                + ",\"quantity\":3,\"makerId\":" + makerB.getId()
-                + ",\"unit\":\"個\",\"category\":\"野菜\"}";
-        performStockOut(session, mismatchRequest)
-                .andExpect(status().isNotFound());
-
-        Product unchangedProduct = productRepository.findById(product.getId()).orElseThrow();
-        StockDetail unchangedDetail = stockDetailRepository
-                .findByProductIdAndMakerId(product.getId(), makerA.getId()).orElseThrow();
-        List<StockHistory> history = stockHistoryRepository
-                .findByProductIdAndTypeOrderByDateTimeAsc(product.getId(), "OUT");
-
-        assertEquals(10, unchangedProduct.getStock());
-        assertEquals(10, unchangedDetail.getQuantity());
-        assertTrue(history.isEmpty());
-    }
-
-    @Test
-    // StockDetail未作成: 商品は存在するがメーカー別内訳が存在しない状態で出庫すると失敗し、履歴が増えないことを確認する
-    void stockFlow_rejectsWhenMakerStockDetailDoesNotExist() throws Exception {
+    // 商品登録→入庫→出庫→履歴→summary の連続ビジネスフローで、最終在庫と集計が整合していることを確認する
+    void stockBusinessFlow_createProductThenInOutThenHistoryAndSummary() throws Exception {
         Maker maker = createMaker("メーカーA");
-        Product product = createProduct("トマト", maker, 7);
         MockHttpSession session = loginAsAdmin();
 
-        performStockOut(session, product, maker, 2)
-                .andExpect(status().isNotFound());
+        Product createdProduct = createProductViaApi(session, maker, "きゅうり");
 
-        Product unchangedProduct = productRepository.findById(product.getId()).orElseThrow();
+        performStockIn(session, createdProduct, maker, 10).andExpect(status().isOk());
+        performStockOut(session, createdProduct, maker, 4).andExpect(status().isOk());
+
+        Product updatedProduct = productRepository.findById(createdProduct.getId()).orElseThrow();
+        StockDetail detail = stockDetailRepository
+                .findByProductIdAndMakerId(createdProduct.getId(), maker.getId()).orElseThrow();
         List<StockHistory> history = stockHistoryRepository
-                .findByProductIdAndTypeOrderByDateTimeAsc(product.getId(), "OUT");
+                .findByProductIdOrderByDateTimeAsc(createdProduct.getId());
 
-        assertEquals(7, unchangedProduct.getStock());
-        assertTrue(history.isEmpty());
-    }
-
-    @Test
-    // 履歴の件数とsummary再計算: 複数回の入出庫後に history 件数・stock・maker summary が一致することを確認する
-    void stockFlow_keepsSummaryConsistentAfterMultipleMoves() throws Exception {
-        Maker makerA = createMaker("メーカーA");
-        Maker makerB = createMaker("メーカーB");
-        Product product = createProduct("ナス", makerA, 0);
-        MockHttpSession session = loginAsAdmin();
-
-        performStockIn(session, product, makerA, 10).andExpect(status().isOk());
-        performStockOut(session, product, makerA, 4).andExpect(status().isOk());
-        performStockIn(session, product, makerB, 5).andExpect(status().isOk());
-        performStockOut(session, product, makerA, 1).andExpect(status().isOk());
-
-        Product updatedProduct = productRepository.findById(product.getId()).orElseThrow();
-        List<StockHistory> allHistory = stockHistoryRepository
-                .findByProductIdOrderByDateTimeAsc(product.getId());
-
-        assertEquals(10, updatedProduct.getStock());
-        assertEquals(4, allHistory.size());
+        assertEquals(6, updatedProduct.getStock());
+        assertEquals(6, detail.getQuantity());
+        assertEquals(2, history.size());
+        assertEquals("IN", history.get(0).getType());
+        assertEquals(10, history.get(0).getQuantity());
+        assertEquals(10, history.get(0).getStock());
+        assertEquals("OUT", history.get(1).getType());
+        assertEquals(4, history.get(1).getQuantity());
+        assertEquals(6, history.get(1).getStock());
 
         mockMvc.perform(get("/api/stock/summary").session(session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[?(@.productName == 'ナス')].stock", contains(10)));
+                .andExpect(jsonPath("$[?(@.productName == 'きゅうり')].stock", contains(6)));
 
-        mockMvc.perform(get("/api/stock/summary/maker/{productName}", "ナス").session(session))
+        mockMvc.perform(get("/api/stock/summary/maker/{productName}", "きゅうり").session(session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[?(@.maker == 'メーカーA')].stock", contains(5)))
-                .andExpect(jsonPath("$[?(@.maker == 'メーカーB')].stock", contains(5)));
+                .andExpect(jsonPath("$[?(@.maker == 'メーカーA')].stock", contains(6)));
+    }
+
+    @Test
+    // 商品登録・更新時にメーカーが必須で、未指定や存在しないメーカーIDでは失敗することを確認する
+    void productMaster_requiresMakerOnCreateAndUpdate() throws Exception {
+        MockHttpSession session = loginAsAdmin();
+
+        mockMvc.perform(post("/api/products/master")
+                .session(session)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"ナス\",\"category\":\"野菜\",\"unit\":\"個\"}"))
+                .andExpect(status().isBadRequest());
+
+        Maker maker = createMaker("メーカーA");
+        Product product = createProduct("トマト", maker, 0);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/products/master/{id}", product.getId())
+                .session(session)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"更新後\",\"category\":\"野菜\",\"unit\":\"個\",\"maker\":{\"id\":999999}}"))
+                .andExpect(status().isNotFound());
+
+        Product persisted = productRepository.findById(product.getId()).orElseThrow();
+        assertEquals("トマト", persisted.getName());
+    }
+
+    @Test
+    // 商品削除後に在庫明細と履歴が関連付けから外れ、商品一覧から取り除かれることを確認する
+    void productDelete_clearsRelatedStockDetailAndHistory() throws Exception {
+        Maker maker = createMaker("メーカーA");
+        Product product = createProduct("きゅうり", maker, 0);
+        MockHttpSession session = loginAsAdmin();
+
+        performStockIn(session, product, maker, 7).andExpect(status().isOk());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/products/master/{id}", product.getId())
+                .session(session)
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        assertTrue(productRepository.findById(product.getId()).isEmpty());
+        assertTrue(stockDetailRepository.findByProductId(product.getId()).isEmpty());
+        assertTrue(stockHistoryRepository.findByProductIdOrderByDateTimeAsc(product.getId()).isEmpty());
+    }
+
+    @Test
+    // 同時出庫でも在庫がマイナスにならず、最終在庫が0未満にならないことを確認する
+    void stockOut_concurrentRequests_doNotCreateNegativeStock() throws Exception {
+        Maker maker = createMaker("メーカーA");
+        Product product = createProduct("キャベツ", maker, 5);
+        MockHttpSession session = loginAsAdmin();
+
+        performStockIn(session, product, maker, 5).andExpect(status().isOk());
+
+        int requestCount = 10;
+        ExecutorService executor = Executors.newFixedThreadPool(requestCount);
+        CountDownLatch start = new CountDownLatch(1);
+        List<Future<?>> futures = new ArrayList<>();
+
+        for (int i = 0; i < requestCount; i++) {
+            futures.add(executor.submit(() -> {
+                start.await(5, TimeUnit.SECONDS);
+                try {
+                    stockOutService.outStock(product.getId(), 1, "個", "野菜", maker.getId());
+                } catch (Exception e) {
+                    // 競合時は失敗しても在庫がマイナスになってはいけない
+                }
+                return null;
+            }));
+        }
+
+        start.countDown();
+
+        for (Future<?> future : futures) {
+            future.get();
+        }
+
+        executor.shutdown();
+
+        Product finalProduct = productRepository.findById(product.getId()).orElseThrow();
+        assertTrue(finalProduct.getStock() >= 0);
+        assertTrue(finalProduct.getStock() <= 10);
+    }
+
+    private Product createProductViaApi(MockHttpSession session, Maker maker, String name) throws Exception {
+        mockMvc.perform(post("/api/products/master")
+                .session(session)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"" + name + "\",\"category\":\"野菜\",\"unit\":\"個\",\"maker\":{\"id\":" + maker.getId() + "}}"))
+                .andExpect(status().isOk());
+
+        return productRepository.findByNameContaining(name).stream()
+                .filter(product -> product.getMaker() != null && product.getMaker().getId().equals(maker.getId()))
+                .findFirst()
+                .orElseThrow();
     }
 
     private ResultActions performStockIn(

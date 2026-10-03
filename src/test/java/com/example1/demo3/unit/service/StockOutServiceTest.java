@@ -60,9 +60,9 @@ public class StockOutServiceTest {
         detail.setMaker(maker);
         detail.setQuantity(7);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
         when(makerRepository.findById(2)).thenReturn(Optional.of(maker));
-        when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.of(detail));
+        when(stockDetailRepository.findByProductIdAndMakerIdForUpdate(1, 2)).thenReturn(Optional.of(detail));
 
         // 実行
         stockOutService.outStock(1, 5, "個", "野菜", 2);
@@ -81,7 +81,7 @@ public class StockOutServiceTest {
     void outStock_shouldThrowExceptionWhenProductNotFound() {
 
         // 準備
-        when(productRepository.findById(1)).thenReturn(Optional.empty());
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.empty());
 
         // 実行
         assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
@@ -96,7 +96,7 @@ public class StockOutServiceTest {
         product.setId(1);
         product.setStock(3);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
 
         //実行
         assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
@@ -112,8 +112,8 @@ public class StockOutServiceTest {
         product.setId(1);
         product.setStock(10);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
-        when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.empty());
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
+        when(stockDetailRepository.findByProductIdAndMakerIdForUpdate(1, 2)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
     }
@@ -127,8 +127,8 @@ public class StockOutServiceTest {
         StockDetail detail = new StockDetail();
         detail.setQuantity(2);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
-        when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.of(detail));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
+        when(stockDetailRepository.findByProductIdAndMakerIdForUpdate(1, 2)).thenReturn(Optional.of(detail));
 
         assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
 
@@ -150,9 +150,9 @@ public class StockOutServiceTest {
         detail.setProduct(product);
         detail.setQuantity(10);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
         when(makerRepository.findById(2)).thenReturn(Optional.empty());
-        when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.of(detail));
+        when(stockDetailRepository.findByProductIdAndMakerIdForUpdate(1, 2)).thenReturn(Optional.of(detail));
 
         //実行
         assertThrows(IllegalArgumentException.class, () -> stockOutService.outStock(1, 5, "個", "野菜", 2));
