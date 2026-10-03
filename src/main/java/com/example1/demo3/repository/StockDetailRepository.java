@@ -3,13 +3,19 @@ package com.example1.demo3.repository;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example1.demo3.dto.StockDetailByMakerDto;
 import com.example1.demo3.entity.StockDetail;
 
 public interface StockDetailRepository extends JpaRepository<StockDetail, Integer> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT sd FROM StockDetail sd WHERE sd.product.id = :productId AND sd.maker.id = :makerId")
+    Optional<StockDetail> findByProductIdAndMakerIdForUpdate(Integer productId, Integer makerId);
 
     Optional<StockDetail> findByProductIdAndMakerId(Integer productId, Integer makerId);
 
