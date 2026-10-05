@@ -15,6 +15,19 @@
 
 ---
 
+## 画面イメージ
+
+### 商品一覧
+![商品一覧画面](images/product-list.png)
+
+### 在庫推移グラフ
+![在庫推移グラフ](images/stock-graph.png)
+
+### 価格変更履歴
+![価格変更履歴画面](images/price-history-up.png)
+
+---
+
 ## 技術スタック
 
 - Java 21
@@ -22,6 +35,9 @@
 - Spring MVC
 - Spring Data JPA
 - Spring Security
+- Vue 3
+- Axios
+- Apache ECharts
 - MySQL
 - H2 (テスト用)
 - Thymeleaf
@@ -46,6 +62,11 @@
 - メーカーの登録・更新・削除
 - 商品とメーカーの紐付け
 - メーカー別在庫の管理基盤として設計
+
+### 価格管理
+- 商品の仕入価格を適用開始日を指定して変更
+- 価格の開始日・終了日を履歴として管理
+- 指定した商品ごとの価格変更履歴を表示
 
 ### 在庫管理
 - 入庫処理
@@ -106,6 +127,107 @@ graph LR
     Service --> Repository
     Repository --> DB[(MySQL / H2)]
 ```
+
+## 業務フロー図
+
+```mermaid
+flowchart TD
+    A[商品・メーカーを登録] --> B{メーカーは必須?}
+    B -- Yes --> C[商品マスタを保存]
+    B -- No --> D[入力エラーで拒否]
+    C --> E[入庫処理]
+    E --> F[現在庫を更新]
+    F --> G[在庫履歴を保存]
+    G --> H{出庫要求}
+    H -- Yes --> I[出庫数量を確認]
+    I --> J{在庫不足?}
+    J -- No --> K[出庫を実行]
+    J -- Yes --> L[処理失敗]
+    K --> M[在庫を減算]
+    M --> N[履歴を記録]
+    N --> O[在庫一覧を表示]
+    H -- No --> O
+    D --> P[ユーザーにエラー表示]
+    L --> P
+
+    classDef success fill:#dff7e8,stroke:#2e8b57,color:#1f2d1f;
+    classDef danger fill:#f8d7da,stroke:#b02a37,color:#3b1f20;
+    classDef process fill:#eaf2ff,stroke:#3b82f6,color:#1f2d1f;
+
+    class C,E,F,G,K,M,N,O success;
+    class D,J,L,P danger;
+    class A,B,H,I process;
+```
+
+この業務フローでは、商品登録・入庫・出庫・履歴保存が一連の流れとして扱われており、在庫不足や不正入力を処理の途中で止める設計になっています。
+
+## ER図
+
+```mermaid
+erDiagram
+    MAKER ||--o{ PRODUCT : owns
+    MAKER ||--o{ STOCK_DETAIL : manages
+    MAKER ||--o{ STOCK_HISTORY : records
+    PRODUCT ||--o{ STOCK_DETAIL : contains
+    PRODUCT ||--o{ STOCK_HISTORY : logs
+    PRODUCT ||--o{ PRODUCT_PRICE : has
+
+    USER {
+        int id PK
+        varchar username UK
+        varchar password
+        varchar role
+    }
+
+    MAKER {
+        int id PK
+        varchar name
+    }
+
+    PRODUCT {
+        int id PK
+        varchar name
+        int stock
+        varchar unit
+        varchar category
+        int maker_id FK
+        int cost_price
+        int sale_price
+        datetime created_at
+        datetime updated_at
+    }
+
+    STOCK_DETAIL {
+        int id PK
+        int product_id FK
+        int maker_id FK
+        int quantity
+    }
+
+    STOCK_HISTORY {
+        int id PK
+        int product_id FK
+        varchar product_name
+        int quantity
+        int maker_id FK
+        varchar unit
+        varchar category
+        datetime date_time
+        varchar type
+        int stock
+    }
+
+    PRODUCT_PRICE {
+        int id PK
+        int product_id FK
+        int cost_price
+        date start_date
+        date end_date
+        datetime created_at
+    }
+```
+
+メーカーと商品は 1:N の関係で、商品ごとの在庫は `stock_detail` と `stock_history` に記録されます。これにより、現在庫と履歴の整合性を保ちつつ、メーカー別の在庫管理を実現しています。
 
 ---
 
@@ -179,17 +301,8 @@ graph LR
 - Docker / Docker Compose
 - Gradle
 
-### 起動手順
-
 現在はローカル開発・検証用途として MySQL のみをコンテナ起動しており、アプリケーション本体は Spring Boot で直接実行して検証しています。
 本番環境へのデプロイおよび本番運用構成までは未対応です。
-
-```bash
-git clone <repository-url>
-cd demo3
-docker compose up -d
-./gradlew test
-```
 
 ---
 
@@ -226,5 +339,10 @@ src/
 
 ---
 
-## まとめ
+## 実装で工夫した点
+
+- 商品全体の在庫とメーカー別の在庫内訳を一致させながら、入出庫履歴も正しく記録することに苦労しました。特に出庫処理では、商品全体と対象メーカーの在庫をそれぞれ確認し、同時に出庫要求があった場合にも在庫が不足しないよう、ロック制御を取り入れました。また、在庫の更新と履歴の保存をトランザクション内で行い、処理に失敗した際にデータの一部だけが更新されないようにしています。これらの仕組みを実装する過程で、ロック制御とトランザクション管理への理解を深め、結合テストで在庫不足や同時出庫時の動作を確認しました。
+- 商品削除時の関連データの扱いにも注意しました。在庫内訳は削除しつつ、過去の入出庫履歴は後から確認できるように、商品名を履歴に保持して商品との関連を解除する設計にしています。これにより、マスタデータの削除後も取引履歴を参照できます。
+- 在庫推移を視覚的に確認できるよう、商品ごとの履歴をAPIから取得し、日時と在庫数をグラフ用データに整形して表示しました。入庫・出庫の数量推移も個別に可視化し、在庫推移グラフでは折れ線と棒グラフを切り替えられるようにしています。商品選択後のデータ再取得やグラフの再描画にも対応しました。
+- 入力ミスや誤操作を減らすため、商品フォームではマスタ情報を選択式で表示し、メーカー未選択時には保存できないようにしました。価格変更画面では価格や適用開始日の入力を確認し、在庫一覧ではメーカー別の内訳を確認できるようにしています。また、削除前に確認を挟むことで、意図しない操作を防ぐようにしました。
 
