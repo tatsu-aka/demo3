@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -395,42 +396,68 @@ class StockFlowIntegrationTest {
     }
 
     @Test
-    // 同時出庫でも在庫がマイナスにならず、最終在庫が0未満にならないことを確認する
+        // 同時出庫時の成功件数、商品在庫、メーカー別内訳、履歴が一致することを確認する
     void stockOut_concurrentRequests_doNotCreateNegativeStock() throws Exception {
         Maker maker = createMaker("メーカーA");
-        Product product = createProduct("キャベツ", maker, 5);
+                Product product = createProduct("キャベツ", maker, 0);
         MockHttpSession session = loginAsAdmin();
 
-        performStockIn(session, product, maker, 5).andExpect(status().isOk());
+                performStockIn(session, product, maker, 10).andExpect(status().isOk());
+                TestTransaction.flagForCommit();
+                TestTransaction.end();
 
-        int requestCount = 10;
+                int availableStock = 10;
+                int requestCount = 15;
         ExecutorService executor = Executors.newFixedThreadPool(requestCount);
         CountDownLatch start = new CountDownLatch(1);
-        List<Future<?>> futures = new ArrayList<>();
+                List<Future<Boolean>> futures = new ArrayList<>();
 
-        for (int i = 0; i < requestCount; i++) {
-            futures.add(executor.submit(() -> {
-                start.await(5, TimeUnit.SECONDS);
                 try {
-                    stockOutService.outStock(product.getId(), 1, "個", "野菜", maker.getId());
-                } catch (Exception e) {
-                    // 競合時は失敗しても在庫がマイナスになってはいけない
+                        for (int i = 0; i < requestCount; i++) {
+                                futures.add(executor.submit(() -> {
+                                        start.await(5, TimeUnit.SECONDS);
+                                        try {
+                                                stockOutService.outStock(product.getId(), 1, "個", "野菜", maker.getId());
+                                                return true;
+                                        } catch (IllegalArgumentException e) {
+                                                return false;
+                                        }
+                                }));
+                        }
+
+                        start.countDown();
+
+                        int successfulRequests = 0;
+                        for (Future<Boolean> future : futures) {
+                                if (future.get()) {
+                                        successfulRequests++;
+                                }
+                        }
+
+                        Product finalProduct = productRepository.findById(product.getId()).orElseThrow();
+                        StockDetail finalDetail = stockDetailRepository
+                                        .findByProductIdAndMakerId(product.getId(), maker.getId()).orElseThrow();
+                        List<StockHistory> outHistory = stockHistoryRepository
+                                        .findByProductIdAndTypeOrderByDateTimeAsc(product.getId(), "OUT");
+
+                        assertEquals(availableStock, successfulRequests);
+                        assertEquals(0, finalProduct.getStock());
+                        assertEquals(0, finalDetail.getQuantity());
+                        assertEquals(0, stockDetailRepository.sumQuantityByProductId(product.getId()));
+                        assertEquals(availableStock, outHistory.size());
+                        assertEquals(availableStock, outHistory.stream().mapToInt(StockHistory::getQuantity).sum());
+                        assertTrue(outHistory.stream().allMatch(history -> "OUT".equals(history.getType())));
+                } finally {
+                        executor.shutdownNow();
+                        TestTransaction.start();
+                        stockHistoryRepository.deleteAll(stockHistoryRepository.findByProductIdOrderByDateTimeAsc(product.getId()));
+                        stockDetailRepository.deleteByProductId(product.getId());
+                        productRepository.deleteById(product.getId());
+                        makerRepository.deleteById(maker.getId());
+                        userRepository.findByUsername("admin").ifPresent(userRepository::delete);
+                        TestTransaction.flagForCommit();
+                        TestTransaction.end();
                 }
-                return null;
-            }));
-        }
-
-        start.countDown();
-
-        for (Future<?> future : futures) {
-            future.get();
-        }
-
-        executor.shutdown();
-
-        Product finalProduct = productRepository.findById(product.getId()).orElseThrow();
-        assertTrue(finalProduct.getStock() >= 0);
-        assertTrue(finalProduct.getStock() <= 10);
     }
 
     private Product createProductViaApi(MockHttpSession session, Maker maker, String name) throws Exception {
