@@ -7,6 +7,7 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example1.demo3.dto.StockDetailByMakerDto;
 import com.example1.demo3.entity.StockDetail;
@@ -15,7 +16,8 @@ public interface StockDetailRepository extends JpaRepository<StockDetail, Intege
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT sd FROM StockDetail sd WHERE sd.product.id = :productId AND sd.maker.id = :makerId")
-    Optional<StockDetail> findByProductIdAndMakerIdForUpdate(Integer productId, Integer makerId);
+    Optional<StockDetail> findByProductIdAndMakerIdForUpdate(
+            @Param("productId") Integer productId, @Param("makerId") Integer makerId);
 
     Optional<StockDetail> findByProductIdAndMakerId(Integer productId, Integer makerId);
 

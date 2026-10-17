@@ -69,7 +69,7 @@ public class StockApiController {
 
     // 取引先別の在庫内訳
     @GetMapping("/summary/maker/{productName}")
-    public List<StockByMakerDto> getStockByMaker(@PathVariable String productName) {
+    public List<StockByMakerDto> getStockByMaker(@PathVariable("productName") String productName) {
         return stockHistoryRepository.getStockByMaker(productName);
     }
 

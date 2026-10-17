@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example1.demo3.dto.StockByMakerDto;
 import com.example1.demo3.dto.StockSummaryDto;
@@ -56,7 +57,7 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
                 WHERE COALESCE(h.productName, p.name) = :productName
                 GROUP BY COALESCE(h.productName, p.name), h.maker.name
             """)
-    List<StockByMakerDto> getStockByMaker(String productName);
+    List<StockByMakerDto> getStockByMaker(@Param("productName") String productName);
 
     @Modifying
     @Query("UPDATE StockHistory sh SET sh.product = NULL WHERE sh.product.id = :id")

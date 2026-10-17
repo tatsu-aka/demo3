@@ -303,6 +303,44 @@ class StockOutIntegrationTest {
     }
 
     @Test
+    // 商品全体の在庫は足りていても指定メーカーの在庫が不足する出庫は拒否し、在庫と履歴を維持する
+    void stockOut_rejectsWhenMakerStockIsInsufficientButTotalStockIsAvailable() throws Exception {
+        Maker makerA = createMaker("メーカーA");
+        Maker makerB = createMaker("メーカーB");
+        Product product = createProduct("白菜", makerA, 10);
+
+        StockDetail detailA = new StockDetail();
+        detailA.setProduct(product);
+        detailA.setMaker(makerA);
+        detailA.setQuantity(2);
+        stockDetailRepository.saveAndFlush(detailA);
+
+        StockDetail detailB = new StockDetail();
+        detailB.setProduct(product);
+        detailB.setMaker(makerB);
+        detailB.setQuantity(8);
+        stockDetailRepository.saveAndFlush(detailB);
+
+        MockHttpSession session = loginAsAdmin();
+
+        performStockOut(session, product, makerA, 3)
+                .andExpect(status().isBadRequest());
+
+        Product unchangedProduct = productRepository.findById(product.getId()).orElseThrow();
+        StockDetail unchangedDetailA = stockDetailRepository
+                .findByProductIdAndMakerId(product.getId(), makerA.getId()).orElseThrow();
+        StockDetail unchangedDetailB = stockDetailRepository
+                .findByProductIdAndMakerId(product.getId(), makerB.getId()).orElseThrow();
+        List<StockHistory> outHistory = stockHistoryRepository
+                .findByProductIdAndTypeOrderByDateTimeAsc(product.getId(), "OUT");
+
+        assertEquals(10, unchangedProduct.getStock());
+        assertEquals(2, unchangedDetailA.getQuantity());
+        assertEquals(8, unchangedDetailB.getQuantity());
+        assertTrue(outHistory.isEmpty());
+    }
+
+    @Test
     // 商品のメーカーと出庫依頼のメーカーが異なる場合、メーカー別在庫が見つからず失敗し、在庫が変わらないことを確認する
     void stockOut_rejectsMakerMismatchWithoutChangingInventory() throws Exception {
         Maker makerA = createMaker("メーカーA");
