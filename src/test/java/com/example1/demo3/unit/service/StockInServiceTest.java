@@ -59,7 +59,7 @@ public class StockInServiceTest {
         detail.setQuantity(5);
         detail.setMaker(maker);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
         when(makerRepository.findById(2)).thenReturn(Optional.of(maker));
         when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.of(detail));
 
@@ -85,7 +85,7 @@ public class StockInServiceTest {
         Maker maker = new Maker();
         maker.setId(2);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
         when(makerRepository.findById(2)).thenReturn(Optional.of(maker));
         when(stockDetailRepository.findByProductIdAndMakerId(1, 2)).thenReturn(Optional.empty());
 
@@ -108,14 +108,14 @@ public class StockInServiceTest {
     @Test
     void inStock_shouldThrowExceptionWhenProductNotFound() {
         //準備
-        when(productRepository.findById(1)).thenReturn(Optional.empty());
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.empty());
 
         //実行
         assertThrows(IllegalArgumentException.class,
             () -> stockInService.inStock(1, 3, 2, "個", "野菜"));
 
         //検証
-        verify(productRepository).findById(1);
+        verify(productRepository).findByIdForUpdate(1);
     }
 
     //異常系　メーカーが見つからない
@@ -126,7 +126,7 @@ public class StockInServiceTest {
         Product product = new Product();
         product.setId(1);
 
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(1)).thenReturn(Optional.of(product));
         when(makerRepository.findById(2)).thenReturn(Optional.empty());
 
         //実行
