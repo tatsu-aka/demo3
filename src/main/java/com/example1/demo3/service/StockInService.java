@@ -31,7 +31,7 @@ public class StockInService {
     // 入庫処理
     @Transactional
     public void inStock(Integer productId, Integer quantity, Integer makerId, String unit, String category) {
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdForUpdate(productId)
             .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません"));
         Maker maker = makerRepository.findById(makerId)
             .orElseThrow(() -> new ResourceNotFoundException("メーカーが見つかりません"));

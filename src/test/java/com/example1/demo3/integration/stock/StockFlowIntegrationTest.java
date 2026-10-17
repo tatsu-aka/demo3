@@ -41,6 +41,7 @@ import com.example1.demo3.repository.ProductRepository;
 import com.example1.demo3.repository.StockDetailRepository;
 import com.example1.demo3.repository.StockHistoryRepository;
 import com.example1.demo3.repository.UserRepository;
+import com.example1.demo3.service.StockInService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -71,6 +72,9 @@ class StockFlowIntegrationTest {
 
     @Autowired
     private com.example1.demo3.service.StockOutService stockOutService;
+
+    @Autowired
+    private StockInService stockInService;
 
     @Test
     // 正常系: 商品を登録して入庫・出庫を実行し、在庫・メーカー別内訳・履歴・集計APIが最新状態になることを確認する
@@ -458,6 +462,67 @@ class StockFlowIntegrationTest {
                         TestTransaction.flagForCommit();
                         TestTransaction.end();
                 }
+    }
+
+    @Test
+    //同時入庫時の成功件数、商品在庫、メーカー別内訳、履歴が一致することを確認する
+    void stockIn_concurrentRequests_preserveProductDetailAndHistoryTotals() throws Exception {
+        Maker maker = createMaker("メーカーA");
+        Product product = createProduct("同時入庫商品", maker, 0);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        int requestCount = 15;
+        ExecutorService executor = Executors.newFixedThreadPool(requestCount);
+        CountDownLatch start = new CountDownLatch(1);
+        List<Future<Boolean>> futures = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < requestCount; i++) {
+                futures.add(executor.submit(() -> {
+                    if (!start.await(10, TimeUnit.SECONDS)) {
+                        throw new IllegalStateException("Concurrent stock-in requests did not start");
+                    }
+                    stockInService.inStock(product.getId(), 1, maker.getId(), "個", "野菜");
+                    return true;
+                }));
+            }
+
+            start.countDown();
+
+            int successfulRequests = 0;
+            for (Future<Boolean> future : futures) {
+                if (future.get(60, TimeUnit.SECONDS)) {
+                    successfulRequests++;
+                }
+            }
+
+            Product finalProduct = productRepository.findById(product.getId()).orElseThrow();
+            StockDetail finalDetail = stockDetailRepository
+                    .findByProductIdAndMakerId(product.getId(), maker.getId()).orElseThrow();
+            List<StockHistory> inHistory = stockHistoryRepository
+                    .findByProductIdAndTypeOrderByDateTimeAsc(product.getId(), "IN");
+
+            assertEquals(requestCount, successfulRequests);
+            assertEquals(requestCount, finalProduct.getStock());
+            assertEquals(requestCount, finalDetail.getQuantity());
+            assertEquals(requestCount, inHistory.size());
+            assertEquals(requestCount, inHistory.stream().mapToInt(StockHistory::getQuantity).sum());
+            assertTrue(inHistory.stream().allMatch(history -> "IN".equals(history.getType())));
+            assertEquals(
+                    java.util.stream.IntStream.rangeClosed(1, requestCount).boxed().toList(),
+                    inHistory.stream().map(StockHistory::getStock).sorted().toList());
+        } finally {
+            executor.shutdownNow();
+            TestTransaction.start();
+            stockHistoryRepository.deleteAll(
+                    stockHistoryRepository.findByProductIdOrderByDateTimeAsc(product.getId()));
+            stockDetailRepository.deleteByProductId(product.getId());
+            productRepository.deleteById(product.getId());
+            makerRepository.deleteById(maker.getId());
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+        }
     }
 
     private Product createProductViaApi(MockHttpSession session, Maker maker, String name) throws Exception {
